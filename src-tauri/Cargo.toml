@@ -1,0 +1,22 @@
+[package]
+name = "mohe"
+version = "0.4.0"
+description = "墨核 - AI 驱动的 Markdown 知识管理桌面应用"
+authors = ["Mohe Team"]
+edition = "2021"
+
+[lib]
+name = "mohe_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }

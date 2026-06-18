@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+/src-tauri/target/
+
+# Build outputs
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+
+# Rust
+*.rs.bk
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.cache/
