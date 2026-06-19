@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Clock, Copy, Star, MoreHorizontal, User } from "lucide-react";
+import { Clock, Copy, Star, MoreHorizontal, User } from "lucide-react";
 import { useAppStore } from "@/stores/appStore";
 
 export default function TitleBar() {
@@ -6,21 +6,11 @@ export default function TitleBar() {
 
   return (
     <header className="h-10 flex items-center justify-between px-4 bg-bg-sidebar border-b border-border-default shrink-0">
-      {/* Left: Breadcrumb */}
+      {/* macOS-style traffic light dots */}
       <div className="flex items-center gap-2">
-        <button className="p-1 text-text-muted hover:text-text-secondary transition-colors">
-          <ChevronLeft size={14} />
-        </button>
-        <nav className="flex items-center gap-1.5 text-xs text-text-tertiary">
-          <span className="hover:text-text-secondary cursor-pointer transition-colors">知识库</span>
-          <span className="text-text-muted">/</span>
-          <span className="hover:text-text-secondary cursor-pointer transition-colors">产品设计体系</span>
-          <span className="text-text-muted">/</span>
-          <span className="text-text-primary">设计原则</span>
-        </nav>
-        <button className="p-1 text-text-muted hover:text-text-secondary transition-colors">
-          <ChevronRight size={14} />
-        </button>
+        <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+        <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+        <div className="w-3 h-3 rounded-full bg-[#28c840]" />
       </div>
 
       {/* Right: Actions */}

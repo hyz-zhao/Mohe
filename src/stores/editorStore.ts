@@ -8,6 +8,7 @@ interface EditorState {
   sidebarCollapsed: boolean;
   rightPanelCollapsed: boolean;
   activeNav: string;
+  saved: boolean;
 
   setViewMode: (mode: ViewMode) => void;
   setActivePanel: (panel: ActivePanel) => void;
@@ -15,6 +16,7 @@ interface EditorState {
   toggleSidebar: () => void;
   toggleRightPanel: () => void;
   setActiveNav: (nav: string) => void;
+  setSaved: (saved: boolean) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -24,6 +26,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   sidebarCollapsed: false,
   rightPanelCollapsed: false,
   activeNav: "知识库",
+  saved: true,
 
   setViewMode: (mode) => set({ viewMode: mode }),
   setActivePanel: (panel) => set({ activePanel: panel }),
@@ -32,4 +35,5 @@ export const useEditorStore = create<EditorState>((set) => ({
   toggleRightPanel: () =>
     set((s) => ({ rightPanelCollapsed: !s.rightPanelCollapsed })),
   setActiveNav: (nav) => set({ activeNav: nav }),
+  setSaved: (saved) => set({ saved }),
 }));

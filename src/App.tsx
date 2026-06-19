@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
-import DocumentList from "@/components/DocumentList";
 import Editor from "@/components/Editor";
 import RightPanel from "@/components/RightPanel";
 import TitleBar from "@/components/TitleBar";
@@ -26,12 +25,7 @@ export default function App() {
 
         {/* Center Area */}
         <div className="flex flex-1 min-w-0 overflow-hidden">
-          {/* Document List - left half of center */}
-          <div className="w-64 border-r border-border-default flex flex-col shrink-0">
-            <DocumentList />
-          </div>
-
-          {/* Editor - right half of center */}
+          {/* Editor */}
           <Editor />
         </div>
 

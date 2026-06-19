@@ -23,22 +23,39 @@ mermaid.initialize({
 
 export default function Editor() {
   const { documents, updateDocument } = useAppStore();
-  const { currentDocId, viewMode, setViewMode } = useEditorStore();
+  const { currentDocId, viewMode, setViewMode, saved, setSaved } = useEditorStore();
 
   const doc = documents.find((d) => d.id === currentDocId);
 
   const [content, setContent] = useState(doc?.content ?? "");
+  const [title, setTitle] = useState(doc?.title ?? "");
+  const titleRef = useRef<HTMLInputElement>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     if (doc) {
       setContent(doc.content);
+      setTitle(doc.title);
     }
   }, [currentDocId, doc?.id]);
 
   function handleContentChange(value: string) {
     setContent(value);
+    setSaved(false);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     if (currentDocId) {
       updateDocument(currentDocId, { content: value });
+      saveTimerRef.current = setTimeout(() => setSaved(true), 500);
+    }
+  }
+
+  function handleTitleChange(value: string) {
+    setTitle(value);
+    setSaved(false);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (currentDocId) {
+      updateDocument(currentDocId, { title: value });
+      saveTimerRef.current = setTimeout(() => setSaved(true), 500);
     }
   }
 
@@ -111,9 +128,14 @@ export default function Editor() {
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-[720px] mx-auto px-12 py-8">
           {/* Title */}
-          <h1 className="text-2xl font-bold text-text-primary mb-4">
-            {doc.title}
-          </h1>
+          <input
+            ref={titleRef}
+            type="text"
+            value={title}
+            onChange={(e) => handleTitleChange(e.target.value)}
+            className="w-full text-2xl font-bold text-text-primary mb-4 bg-transparent outline-none border-none placeholder-text-muted"
+            placeholder="未命名文档"
+          />
 
           {/* Tags */}
           <div className="flex items-center gap-2 mb-6">

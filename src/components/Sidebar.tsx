@@ -9,6 +9,7 @@ import {
   Plus,
   ChevronDown,
   Settings,
+  FileText,
 } from "lucide-react";
 import { useEditorStore } from "@/stores/editorStore";
 import { useAppStore } from "@/stores/appStore";
@@ -39,8 +40,8 @@ const knowledgeBases = [
 ];
 
 export default function Sidebar() {
-  const { sidebarCollapsed, activeNav, setActiveNav } = useEditorStore();
-  const { userInfo } = useAppStore();
+  const { sidebarCollapsed, activeNav, setActiveNav, setCurrentDocId, currentDocId } = useEditorStore();
+  const { userInfo, addDocument, documents } = useAppStore();
   const [showSettings, setShowSettings] = useState(false);
 
   if (sidebarCollapsed) {
@@ -79,7 +80,20 @@ export default function Sidebar() {
 
       {/* New Document Button */}
       <div className="px-3 mb-2">
-        <button className="w-full flex items-center justify-between px-3 py-2 bg-bg-card border border-border-card rounded-md text-text-secondary text-sm hover:bg-bg-hover transition-colors">
+        <button
+          onClick={() => {
+            const newDoc = {
+              id: Date.now().toString(),
+              title: "未命名文档",
+              content: "",
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            };
+            addDocument(newDoc);
+            setCurrentDocId(newDoc.id);
+          }}
+          className="w-full flex items-center justify-between px-3 py-2 bg-bg-card border border-border-card rounded-md text-text-secondary text-sm hover:bg-bg-hover transition-colors"
+        >
           <span className="flex items-center gap-2">
             <Plus size={14} />
             新建文档
@@ -103,6 +117,26 @@ export default function Sidebar() {
 
         {/* Divider */}
         <div className="h-px bg-border-default my-3 mx-2" />
+
+        {/* Recent Documents */}
+        {documents.length > 0 && (
+          <>
+            <div className="px-3 py-1 text-xs text-text-muted font-medium uppercase tracking-wider">
+              最近文档
+            </div>
+            {documents.slice(0, 8).map((doc) => (
+              <button
+                key={doc.id}
+                onClick={() => setCurrentDocId(doc.id)}
+                className={`sidebar-item w-full text-left ${currentDocId === doc.id ? "active" : ""}`}
+              >
+                <FileText size={14} className="text-text-muted shrink-0" />
+                <span className="truncate text-sm">{doc.title}</span>
+              </button>
+            ))}
+            <div className="h-px bg-border-default my-3 mx-2" />
+          </>
+        )}
 
         {/* Knowledge Bases */}
         <div className="px-3 py-1 text-xs text-text-muted font-medium uppercase tracking-wider">
