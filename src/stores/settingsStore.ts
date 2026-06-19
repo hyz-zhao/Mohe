@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { Settings } from "@/types";
 
 interface SettingsState extends Settings {
@@ -9,7 +10,7 @@ interface SettingsState extends Settings {
   setEmbeddingModel: (model: string) => void;
 }
 
-const defaultSettings: Settings = {
+const DEFAULT_SETTINGS: Settings = {
   apiProvider: "ollama",
   apiKey: "",
   baseUrl: "http://localhost:11434",
@@ -17,12 +18,26 @@ const defaultSettings: Settings = {
   embeddingModel: "nomic-embed-text",
 };
 
-export const useSettingsStore = create<SettingsState>((set) => ({
-  ...defaultSettings,
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set) => ({
+      ...DEFAULT_SETTINGS,
 
-  setApiProvider: (provider) => set({ apiProvider: provider }),
-  setApiKey: (apiKey) => set({ apiKey }),
-  setBaseUrl: (baseUrl) => set({ baseUrl }),
-  setModel: (model) => set({ model }),
-  setEmbeddingModel: (embeddingModel) => set({ embeddingModel }),
-}));
+      setApiProvider: (provider) => set({ apiProvider: provider }),
+      setApiKey: (apiKey) => set({ apiKey }),
+      setBaseUrl: (baseUrl) => set({ baseUrl }),
+      setModel: (model) => set({ model }),
+      setEmbeddingModel: (embeddingModel) => set({ embeddingModel }),
+    }),
+    {
+      name: "mohe-settings",
+      partialize: (state) => ({
+        apiProvider: state.apiProvider,
+        apiKey: state.apiKey,
+        baseUrl: state.baseUrl,
+        model: state.model,
+        embeddingModel: state.embeddingModel,
+      }),
+    }
+  )
+);
