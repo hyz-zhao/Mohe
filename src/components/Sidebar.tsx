@@ -123,15 +123,22 @@ export default function Sidebar() {
       {/* User Info */}
       <div className="p-3 border-t border-border-default">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm overflow-hidden shrink-0 bg-gradient-to-br from-accent to-cyan">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium overflow-hidden shrink-0"
+            style={{
+              background: userInfo.avatar.startsWith("data:")
+                ? "none"
+                : "linear-gradient(to-br, #0ea5e9, #06b6d4)",
+            }}
+          >
             {userInfo.avatar.startsWith("data:") ? (
-              <img src={userInfo.avatar} alt="" className="w-full h-full object-cover" />
+              <img src={userInfo.avatar} alt="avatar" className="w-full h-full object-cover" />
             ) : (
-              <span className="text-base leading-none">{userInfo.avatar}</span>
+              <span className="text-base">{userInfo.avatar || "👤"}</span>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm text-text-primary truncate">{userInfo.username}</div>
+            <div className="text-sm text-text-primary truncate">{userInfo.username || "用户"}</div>
             <div className="text-xs text-text-muted">PRO</div>
           </div>
           <button

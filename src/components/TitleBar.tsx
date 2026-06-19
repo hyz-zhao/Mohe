@@ -39,16 +39,14 @@ export default function TitleBar() {
           <MoreHorizontal size={14} />
         </button>
         <div className="ml-2 pl-2 border-l border-border-default flex items-center gap-2">
-          <span className="text-xs text-text-secondary flex items-center gap-1.5">
-            <span className="inline-block w-5 h-5 rounded-full bg-bg-card border border-border-card flex items-center justify-center text-sm overflow-hidden">
-              {userInfo.avatar.startsWith("data:") ? (
-                <img src={userInfo.avatar} alt="" className="w-full h-full object-cover" />
-              ) : (
-                userInfo.avatar
-              )}
-            </span>
-            {userInfo.username}
-          </span>
+          <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center shrink-0" style={{ background: userInfo.avatar.startsWith("data:") ? "none" : "linear-gradient(to-br, #0ea5e9, #06b6d4)" }}>
+            {userInfo.avatar.startsWith("data:") ? (
+              <img src={userInfo.avatar} alt="avatar" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-sm">{userInfo.avatar || "👤"}</span>
+            )}
+          </div>
+          <span className="text-xs text-text-secondary truncate max-w-[100px]">{userInfo.username || "用户"}</span>
           <button className="p-1 text-text-muted hover:text-text-secondary transition-colors rounded hover:bg-bg-hover">
             <User size={14} />
           </button>
