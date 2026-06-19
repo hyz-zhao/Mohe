@@ -11,6 +11,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useEditorStore } from "@/stores/editorStore";
+import { useAppStore } from "@/stores/appStore";
 import { useState } from "react";
 import SettingsPage from "./SettingsPage";
 
@@ -38,7 +39,8 @@ const knowledgeBases = [
 ];
 
 export default function Sidebar() {
-  const { sidebarCollapsed } = useEditorStore();
+  const { sidebarCollapsed, activeNav, setActiveNav } = useEditorStore();
+  const { userInfo } = useAppStore();
   const [showSettings, setShowSettings] = useState(false);
 
   if (sidebarCollapsed) {
@@ -64,7 +66,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-60 bg-bg-sidebar border-r border-border-default flex flex-col shrink-0 select-none">
+    <aside className="w-60 bg-bg-sidebar border-r border-border-default flex flex-col shrink-0">
       {/* Logo */}
       <div className="h-12 flex items-center gap-2.5 px-4">
         <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-sm">
@@ -89,13 +91,14 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="px-2 flex-1 overflow-y-auto">
         {navItems.map((item) => (
-          <div
+          <button
             key={item.label}
-            className={`sidebar-item ${item.active ? "active" : ""}`}
+            className={`sidebar-item w-full text-left ${activeNav === item.label ? "active" : ""}`}
+            onClick={() => setActiveNav(item.label)}
           >
             {item.icon}
             <span>{item.label}</span>
-          </div>
+          </button>
         ))}
 
         {/* Divider */}
@@ -106,25 +109,29 @@ export default function Sidebar() {
           知识库
         </div>
         {knowledgeBases.map((kb) => (
-          <div key={kb.label} className="sidebar-item">
+          <button key={kb.label} className="sidebar-item w-full text-left">
             <span className="text-text-tertiary">{kb.icon}</span>
             <span>{kb.label}</span>
-          </div>
+          </button>
         ))}
-        <div className="sidebar-item">
+        <button className="sidebar-item w-full text-left">
           <Plus size={16} />
           <span>更多知识库</span>
-        </div>
+        </button>
       </nav>
 
       {/* User Info */}
       <div className="p-3 border-t border-border-default">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-cyan flex items-center justify-center text-white text-xs font-medium">
-            王
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm overflow-hidden shrink-0 bg-gradient-to-br from-accent to-cyan">
+            {userInfo.avatar.startsWith("data:") ? (
+              <img src={userInfo.avatar} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-base leading-none">{userInfo.avatar}</span>
+            )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm text-text-primary truncate">王不留行</div>
+            <div className="text-sm text-text-primary truncate">{userInfo.username}</div>
             <div className="text-xs text-text-muted">PRO</div>
           </div>
           <button

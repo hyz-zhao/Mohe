@@ -7,12 +7,14 @@ interface EditorState {
   currentDocId: string | null;
   sidebarCollapsed: boolean;
   rightPanelCollapsed: boolean;
+  activeNav: string;
 
   setViewMode: (mode: ViewMode) => void;
   setActivePanel: (panel: ActivePanel) => void;
   setCurrentDocId: (id: string | null) => void;
   toggleSidebar: () => void;
   toggleRightPanel: () => void;
+  setActiveNav: (nav: string) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -21,6 +23,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   currentDocId: null,
   sidebarCollapsed: false,
   rightPanelCollapsed: false,
+  activeNav: "知识库",
 
   setViewMode: (mode) => set({ viewMode: mode }),
   setActivePanel: (panel) => set({ activePanel: panel }),
@@ -28,4 +31,5 @@ export const useEditorStore = create<EditorState>((set) => ({
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   toggleRightPanel: () =>
     set((s) => ({ rightPanelCollapsed: !s.rightPanelCollapsed })),
+  setActiveNav: (nav) => set({ activeNav: nav }),
 }));

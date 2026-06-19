@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { X, Server, Key, Cpu, Sparkles, Check, Database, Download, Upload, HardDrive } from "lucide-react";
+import { useState, useRef } from "react";
+import { X, Server, Key, Cpu, Sparkles, Check, Database, Download, Upload, HardDrive, User, Camera, Smile } from "lucide-react";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { useAppStore } from "@/stores/appStore";
+import { useAppStore, type UserInfo } from "@/stores/appStore";
 import { useChatStore } from "@/stores/chatStore";
 
 interface SettingsPageProps {
@@ -10,13 +10,14 @@ interface SettingsPageProps {
 
 export default function SettingsPage({ onClose }: SettingsPageProps) {
   const settings = useSettingsStore();
-  const { documents } = useAppStore();
+  const { documents, userInfo, setUserInfo } = useAppStore();
   const { messages } = useChatStore();
   const [testStatus, setTestStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [testMessage, setTestMessage] = useState("");
-  const [activeTab, setActiveTab] = useState<"ai" | "data">("ai");
+  const [activeTab, setActiveTab] = useState<"ai" | "data" | "profile">("ai");
   const [exportStatus, setExportStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [importStatus, setImportStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleTestConnection() {
     setTestStatus("loading");
@@ -110,6 +111,26 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
     input.click();
   }
 
+  function handleAvatarChange(type: "emoji" | "upload", value: string) {
+    setUserInfo({ avatar: value });
+  }
+
+  function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setUserInfo({ username: e.target.value });
+  }
+
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      handleAvatarChange("upload", result);
+    };
+    reader.readAsDataURL(file);
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="w-[560px] max-h-[80vh] bg-bg-sidebar border border-border-card rounded-xl shadow-lg flex flex-col">
@@ -153,144 +174,155 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
             <Database size={14} />
             数据管理
           </button>
+          <button
+            onClick={() => setActiveTab("profile")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === "profile"
+                ? "text-accent border-accent"
+                : "text-text-tertiary border-transparent hover:text-text-secondary"
+            }`}
+          >
+            <User size={14} />
+            个人信息
+          </button>
         </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
           {activeTab === "ai" ? (
             <>
-          {/* Provider Selection */}
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              AI 提供商
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => settings.setApiProvider("ollama")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
-                  settings.apiProvider === "ollama"
-                    ? "bg-bg-active border-accent text-text-primary"
-                    : "bg-bg-card border-border-card text-text-secondary hover:bg-bg-hover"
-                }`}
-              >
-                <Cpu size={18} />
-                <div className="text-left">
-                  <div className="text-sm font-medium">Ollama</div>
-                  <div className="text-xs text-text-muted">本地模型 · 隐私优先</div>
+              {/* Provider Selection */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  AI 提供商
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => settings.setApiProvider("ollama")}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
+                      settings.apiProvider === "ollama"
+                        ? "bg-bg-active border-accent text-text-primary"
+                        : "bg-bg-card border-border-card text-text-secondary hover:bg-bg-hover"
+                    }`}
+                  >
+                    <Cpu size={18} />
+                    <div className="text-left">
+                      <div className="text-sm font-medium">Ollama</div>
+                      <div className="text-xs text-text-muted">本地模型 · 隐私优先</div>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => settings.setApiProvider("openai")}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
+                      settings.apiProvider === "openai"
+                        ? "bg-bg-active border-accent text-text-primary"
+                        : "bg-bg-card border-border-card text-text-secondary hover:bg-bg-hover"
+                    }`}
+                  >
+                    <Server size={18} />
+                    <div className="text-left">
+                      <div className="text-sm font-medium">OpenAI 兼容</div>
+                      <div className="text-xs text-text-muted">外部 API · 更强能力</div>
+                    </div>
+                  </button>
                 </div>
-              </button>
-              <button
-                onClick={() => settings.setApiProvider("openai")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
-                  settings.apiProvider === "openai"
-                    ? "bg-bg-active border-accent text-text-primary"
-                    : "bg-bg-card border-border-card text-text-secondary hover:bg-bg-hover"
-                }`}
-              >
-                <Server size={18} />
-                <div className="text-left">
-                  <div className="text-sm font-medium">OpenAI 兼容</div>
-                  <div className="text-xs text-text-muted">外部 API · 更强能力</div>
+              </div>
+
+              {/* Base URL */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  Base URL
+                </label>
+                <input
+                  type="text"
+                  value={settings.baseUrl}
+                  onChange={(e) => settings.setBaseUrl(e.target.value)}
+                  placeholder={settings.apiProvider === "ollama" ? "http://localhost:11434" : "https://api.openai.com"}
+                  className="input-base"
+                />
+                <p className="mt-1 text-xs text-text-muted">
+                  {settings.apiProvider === "ollama"
+                    ? "Ollama 默认地址: http://localhost:11434"
+                    : "支持任何 OpenAI 兼容 API"}
+                </p>
+              </div>
+
+              {/* API Key */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  API Key
+                </label>
+                <div className="relative">
+                  <Key size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="password"
+                    value={settings.apiKey}
+                    onChange={(e) => settings.setApiKey(e.target.value)}
+                    placeholder="输入 API Key（可选）"
+                    className="input-base pl-9"
+                  />
                 </div>
-              </button>
-            </div>
-          </div>
+                <p className="mt-1 text-xs text-text-muted">
+                  Ollama 本地模型无需 API Key
+                </p>
+              </div>
 
-          {/* Base URL */}
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              Base URL
-            </label>
-            <input
-              type="text"
-              value={settings.baseUrl}
-              onChange={(e) => settings.setBaseUrl(e.target.value)}
-              placeholder={settings.apiProvider === "ollama" ? "http://localhost:11434" : "https://api.openai.com"}
-              className="input-base"
-            />
-            <p className="mt-1 text-xs text-text-muted">
-              {settings.apiProvider === "ollama"
-                ? "Ollama 默认地址: http://localhost:11434"
-                : "支持任何 OpenAI 兼容 API"}
-            </p>
-          </div>
+              {/* Model */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  对话模型
+                </label>
+                <input
+                  type="text"
+                  value={settings.model}
+                  onChange={(e) => settings.setModel(e.target.value)}
+                  placeholder={settings.apiProvider === "ollama" ? "qwen2.5:latest" : "gpt-4o"}
+                  className="input-base"
+                />
+              </div>
 
-          {/* API Key */}
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              API Key
-            </label>
-            <div className="relative">
-              <Key size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-              <input
-                type="password"
-                value={settings.apiKey}
-                onChange={(e) => settings.setApiKey(e.target.value)}
-                placeholder="输入 API Key（可选）"
-                className="input-base pl-9"
-              />
-            </div>
-            <p className="mt-1 text-xs text-text-muted">
-              Ollama 本地模型无需 API Key
-            </p>
-          </div>
+              {/* Embedding Model */}
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  向量嵌入模型
+                </label>
+                <input
+                  type="text"
+                  value={settings.embeddingModel}
+                  onChange={(e) => settings.setEmbeddingModel(e.target.value)}
+                  placeholder={settings.apiProvider === "ollama" ? "nomic-embed-text" : "text-embedding-3-small"}
+                  className="input-base"
+                />
+                <p className="mt-1 text-xs text-text-muted">
+                  用于 RAG 知识库的文档向量化
+                </p>
+              </div>
 
-          {/* Model */}
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              对话模型
-            </label>
-            <input
-              type="text"
-              value={settings.model}
-              onChange={(e) => settings.setModel(e.target.value)}
-              placeholder={settings.apiProvider === "ollama" ? "qwen2.5:latest" : "gpt-4o"}
-              className="input-base"
-            />
-          </div>
-
-          {/* Embedding Model */}
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
-              向量嵌入模型
-            </label>
-            <input
-              type="text"
-              value={settings.embeddingModel}
-              onChange={(e) => settings.setEmbeddingModel(e.target.value)}
-              placeholder={settings.apiProvider === "ollama" ? "nomic-embed-text" : "text-embedding-3-small"}
-              className="input-base"
-            />
-            <p className="mt-1 text-xs text-text-muted">
-              用于 RAG 知识库的文档向量化
-            </p>
-          </div>
-
-          {/* Test Connection */}
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              onClick={handleTestConnection}
-              disabled={testStatus === "loading"}
-              className="btn-ghost flex items-center gap-2 disabled:opacity-50"
-            >
-              {testStatus === "loading" ? (
-                <span className="w-3.5 h-3.5 border-2 border-text-muted border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Server size={14} />
-              )}
-              测试连接
-            </button>
-            {testStatus === "success" && (
-              <span className="flex items-center gap-1 text-xs text-success">
-                <Check size={12} /> {testMessage}
-              </span>
-            )}
-            {testStatus === "error" && (
-              <span className="text-xs text-danger">{testMessage}</span>
-            )}
-          </div>
+              {/* Test Connection */}
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={handleTestConnection}
+                  disabled={testStatus === "loading"}
+                  className="btn-ghost flex items-center gap-2 disabled:opacity-50"
+                >
+                  {testStatus === "loading" ? (
+                    <span className="w-3.5 h-3.5 border-2 border-text-muted border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Server size={14} />
+                  )}
+                  测试连接
+                </button>
+                {testStatus === "success" && (
+                  <span className="flex items-center gap-1 text-xs text-success">
+                    <Check size={12} /> {testMessage}
+                  </span>
+                )}
+                {testStatus === "error" && (
+                  <span className="text-xs text-danger">{testMessage}</span>
+                )}
+              </div>
             </>
-          ) : (
+          ) : activeTab === "data" ? (
             <>
               {/* 数据统计 */}
               <div>
@@ -383,6 +415,80 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
                 {importStatus === "error" && (
                   <p className="text-xs text-danger mt-2">导入失败，请检查文件格式</p>
                 )}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* 头像设置 */}
+              <div>
+                <h3 className="text-sm font-medium text-text-secondary mb-3">头像</h3>
+                <div className="flex items-center gap-4">
+                  {/* 头像预览 */}
+                  <div className="w-20 h-20 rounded-full bg-bg-card border-2 border-border-card flex items-center justify-center text-4xl overflow-hidden">
+                    {userInfo.avatar.startsWith("data:") ? (
+                      <img src={userInfo.avatar} alt="avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      userInfo.avatar
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-3">
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="btn-ghost flex items-center gap-2 border border-border-card"
+                      >
+                        <Camera size={14} />
+                        上传图片
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-xs text-text-muted">
+                      支持 JPG、PNG、GIF 格式，也可使用 Emoji 表情
+                    </p>
+                  </div>
+                </div>
+
+                {/* Emoji 选择 */}
+                <div className="mt-4">
+                  <p className="text-xs text-text-muted mb-2">快捷选择：</p>
+                  <div className="flex flex-wrap gap-2">
+                    {["👤", "😊", "😎", "🤖", "👾", "🦊", "🐱", "🐶", "🦉", "🐼", "🐨", "🐯", "🦁", "🐸", "🐙", "🦄"].map((emoji) => (
+                      <button
+                        key={emoji}
+                        onClick={() => handleAvatarChange("emoji", emoji)}
+                        className={`w-10 h-10 rounded-lg border text-xl flex items-center justify-center transition-colors ${
+                          userInfo.avatar === emoji
+                            ? "border-accent bg-bg-active"
+                            : "border-border-card hover:border-border-hover"
+                        }`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* 用户名设置 */}
+              <div>
+                <h3 className="text-sm font-medium text-text-secondary mb-3">用户名</h3>
+                <input
+                  type="text"
+                  value={userInfo.username}
+                  onChange={handleUsernameChange}
+                  placeholder="输入用户名"
+                  maxLength={20}
+                  className="input-base"
+                />
+                <p className="mt-1 text-xs text-text-muted">
+                  用户名将在右上角显示
+                </p>
               </div>
             </>
           )}

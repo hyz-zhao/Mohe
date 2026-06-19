@@ -1,10 +1,16 @@
 import { create } from "zustand";
 import type { Document } from "@/types";
 
+export interface UserInfo {
+  username: string;
+  avatar: string; // base64 encoded image or emoji
+}
+
 interface AppState {
   documents: Document[];
   searchQuery: string;
   activeTab: "all" | "mine" | "starred";
+  userInfo: UserInfo;
 
   setDocuments: (docs: Document[]) => void;
   addDocument: (doc: Document) => void;
@@ -12,6 +18,7 @@ interface AppState {
   deleteDocument: (id: string) => void;
   setSearchQuery: (query: string) => void;
   setActiveTab: (tab: "all" | "mine" | "starred") => void;
+  setUserInfo: (info: Partial<UserInfo>) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -56,6 +63,10 @@ export const useAppStore = create<AppState>((set) => ({
   ],
   searchQuery: "",
   activeTab: "all",
+  userInfo: {
+    username: "用户",
+    avatar: "👤",
+  },
 
   setDocuments: (docs) => set({ documents: docs }),
   addDocument: (doc) => set((s) => ({ documents: [doc, ...s.documents] })),
@@ -69,4 +80,5 @@ export const useAppStore = create<AppState>((set) => ({
     set((s) => ({ documents: s.documents.filter((d) => d.id !== id) })),
   setSearchQuery: (query) => set({ searchQuery: query }),
   setActiveTab: (tab) => set({ activeTab: tab }),
+  setUserInfo: (info) => set((s) => ({ userInfo: { ...s.userInfo, ...info } })),
 }));
