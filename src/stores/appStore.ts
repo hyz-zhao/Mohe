@@ -16,6 +16,7 @@ interface AppState {
   setDocuments: (docs: Document[]) => void;
   addDocument: (doc: Document) => void;
   updateDocument: (id: string, updates: Partial<Document>) => void;
+  touchDocument: (id: string) => void;
   deleteDocument: (id: string) => void;
   setSearchQuery: (query: string) => void;
   setActiveTab: (tab: "all" | "mine" | "starred") => void;
@@ -81,6 +82,15 @@ export const useAppStore = create<AppState>()(
             d.id === id ? { ...d, ...updates, updated_at: new Date().toISOString() } : d
           ),
         })),
+      touchDocument: (id) =>
+        set((s) => {
+          const idx = s.documents.findIndex((d) => d.id === id);
+          if (idx <= 0) return s;
+          const docs = [...s.documents];
+          const [doc] = docs.splice(idx, 1);
+          docs.unshift(doc);
+          return { documents: docs };
+        }),
       deleteDocument: (id) =>
         set((s) => ({ documents: s.documents.filter((d) => d.id !== id) })),
       setSearchQuery: (query) => set({ searchQuery: query }),

@@ -41,7 +41,7 @@ const knowledgeBases = [
 
 export default function Sidebar() {
   const { sidebarCollapsed, activeNav, setActiveNav, setCurrentDocId, currentDocId } = useEditorStore();
-  const { userInfo, addDocument, documents } = useAppStore();
+  const { userInfo, addDocument, documents, touchDocument } = useAppStore();
   const [showSettings, setShowSettings] = useState(false);
 
   if (sidebarCollapsed) {
@@ -127,7 +127,10 @@ export default function Sidebar() {
             {documents.slice(0, 8).map((doc) => (
               <button
                 key={doc.id}
-                onClick={() => setCurrentDocId(doc.id)}
+                onClick={() => {
+                  touchDocument(doc.id);
+                  setCurrentDocId(doc.id);
+                }}
                 className={`sidebar-item w-full text-left ${currentDocId === doc.id ? "active" : ""}`}
               >
                 <FileText size={14} className="text-text-muted shrink-0" />
