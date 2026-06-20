@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "@/stores/appStore";
 import { useEditorStore } from "@/stores/editorStore";
-import { List, Edit3, Eye, MoreHorizontal, Tag, Plus } from "lucide-react";
+import { List, Edit3, Eye, MoreHorizontal, Tag, Plus, Save } from "lucide-react";
 import CodeMirrorEditor from "./CodeMirrorEditor";
 import katex from "katex";
 import mermaid from "mermaid";
@@ -29,6 +29,7 @@ export default function Editor() {
 
   const [content, setContent] = useState(doc?.content ?? "");
   const [title, setTitle] = useState(doc?.title ?? "");
+  const [saveFlash, setSaveFlash] = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -38,6 +39,14 @@ export default function Editor() {
       setTitle(doc.title);
     }
   }, [currentDocId, doc?.id]);
+
+  function doSave() {
+    if (!currentDocId) return;
+    updateDocument(currentDocId, { title, content });
+    setSaved(true);
+    setSaveFlash(true);
+    setTimeout(() => setSaveFlash(false), 1200);
+  }
 
   function handleContentChange(value: string) {
     setContent(value);
@@ -107,6 +116,15 @@ export default function Editor() {
           </button>
         </div>
         <div className="flex items-center gap-1">
+          <button
+            onClick={doSave}
+            className={`btn-ghost flex items-center gap-1.5 transition-all ${
+              saveFlash ? "text-green-400" : ""
+            }`}
+          >
+            <Save size={12} />
+            <span className="text-xs">{saveFlash ? "已保存" : "保存"}</span>
+          </button>
           <button className="btn-ghost flex items-center gap-1.5">
             <Tag size={12} />
             <span className="text-xs">设计原则</span>

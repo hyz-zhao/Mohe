@@ -124,19 +124,21 @@ export default function Sidebar() {
             <div className="px-3 py-1 text-xs text-text-muted font-medium uppercase tracking-wider">
               最近文档
             </div>
-            {documents.slice(0, 8).map((doc) => (
-              <button
-                key={doc.id}
-                onClick={() => {
-                  touchDocument(doc.id);
-                  setCurrentDocId(doc.id);
-                }}
-                className={`sidebar-item w-full text-left ${currentDocId === doc.id ? "active" : ""}`}
-              >
-                <FileText size={14} className="text-text-muted shrink-0" />
-                <span className="truncate text-sm">{doc.title}</span>
-              </button>
-            ))}
+            <div className="flex flex-col overflow-y-auto max-h-[180px]">
+              {documents.slice(0, 8).map((doc) => (
+                <button
+                  key={doc.id}
+                  onClick={() => {
+                    touchDocument(doc.id);
+                    setCurrentDocId(doc.id);
+                  }}
+                  className={`sidebar-item w-full text-left shrink-0 ${currentDocId === doc.id ? "active" : ""}`}
+                >
+                  <FileText size={14} className="text-text-muted shrink-0" />
+                  <span className="truncate text-sm">{doc.title}</span>
+                </button>
+              ))}
+            </div>
             <div className="h-px bg-border-default my-3 mx-2" />
           </>
         )}

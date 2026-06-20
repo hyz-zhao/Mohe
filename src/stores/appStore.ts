@@ -98,8 +98,8 @@ export const useAppStore = create<AppState>()(
       setUserInfo: (info) => set((s) => ({ userInfo: { ...s.userInfo, ...info } })),
     }),
     {
-      name: "mohe-user-info",
-      partialize: (state) => ({ userInfo: state.userInfo }),
+      name: "mohe-app-data",
+      partialize: (state) => ({ userInfo: state.userInfo, documents: state.documents }),
     }
   )
 );
