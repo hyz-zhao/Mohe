@@ -4,14 +4,17 @@ import Editor from "@/components/Editor";
 import RightPanel from "@/components/RightPanel";
 import TitleBar from "@/components/TitleBar";
 import { useEditorStore } from "@/stores/editorStore";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { initTools } from "@/services/initTools";
 
 export default function App() {
   const { rightPanelCollapsed } = useEditorStore();
+  const { theme } = useSettingsStore();
 
   useEffect(() => {
     initTools();
-  }, []);
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-bg-deepest overflow-hidden">

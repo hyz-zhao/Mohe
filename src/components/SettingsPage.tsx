@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   X, Server, Key, Cpu, Sparkles, Check, Database, Download, Upload,
   HardDrive, User, Camera, Smile, Zap, Globe, Image as ImageIcon,
-  FileText, MessageSquare, Activity, ArrowRight, Circle
+  FileText, MessageSquare, Activity, ArrowRight, Circle, Sun, Moon
 } from "lucide-react";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { useAppStore } from "@/stores/appStore";
@@ -256,6 +256,38 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
                       </div>
                       <div className="mohe-preview-badge">PRO</div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Theme Selector */}
+                <div className="mohe-field">
+                  <label className="mohe-label">
+                    <span className="mohe-label__code">PF.02</span>
+                    <span>主题</span>
+                  </label>
+                  <div className="mohe-provider-grid">
+                    {[
+                      { id: "cream" as const, icon: <Sun size={18} />, title: "奶油", desc: "浅色暖调 · 护眼舒适", tag: "LIGHT" },
+                      { id: "dark" as const, icon: <Moon size={18} />, title: "深色", desc: "暗色主题 · 专注沉浸", tag: "DARK" },
+                    ].map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => settings.setTheme(t.id)}
+                        className={`mohe-provider-card ${settings.theme === t.id ? "mohe-provider-card--active" : ""}`}
+                      >
+                        <div className="mohe-provider-card__tag">{t.tag}</div>
+                        <div className="mohe-provider-card__icon">{t.icon}</div>
+                        <div className="mohe-provider-card__info">
+                          <div className="mohe-provider-card__title">{t.title}</div>
+                          <div className="mohe-provider-card__desc">{t.desc}</div>
+                        </div>
+                        {settings.theme === t.id && (
+                          <div className="mohe-provider-card__check">
+                            <Check size={13} />
+                          </div>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -551,7 +583,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
       <style>{`
         /* ═══════════════════════════════════════════
-           WARM CREAM — Settings Panel (Light Theme)
+           THEME-AWARE — Settings Panel
            ═══════════════════════════════════════════ */
 
         .mohe-settings-root {
@@ -591,7 +623,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(44,40,37,0.2);
+          background: rgba(0,0,0,0.3);
           backdrop-filter: blur(8px);
           opacity: 0;
           transition: opacity 0.4s ease;
@@ -608,13 +640,10 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           max-height: 85vh;
           display: flex;
           flex-direction: column;
-          background: linear-gradient(165deg, #fffdf9 0%, #faf7f4 40%, #f5f0eb 100%);
-          border: 1px solid rgba(184,134,11,0.1);
+          background: var(--bg-card);
+          border: 1px solid var(--border-default);
           border-radius: 14px;
-          box-shadow:
-            0 30px 80px rgba(44,40,37,0.12),
-            0 0 0 1px rgba(44,40,37,0.03),
-            inset 0 1px 0 rgba(255,255,255,0.8);
+          box-shadow: var(--shadow-lg);
           opacity: 0;
           transform: scale(0.96) translateY(12px);
           transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -644,7 +673,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           justify-content: space-between;
           padding: 20px 24px;
-          border-bottom: 1px solid rgba(44,40,37,0.06);
+          border-bottom: 1px solid var(--border-default);
           position: relative;
           z-index: 1;
         }
@@ -667,7 +696,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-header__title {
           font-size: 16px;
           font-weight: 600;
-          color: #2c2825;
+          color: var(--text-primary);
           letter-spacing: -0.02em;
           line-height: 1.2;
         }
@@ -685,7 +714,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           border-radius: 8px;
           border: none;
           background: transparent;
-          color: #b0a89e;
+          color: var(--text-tertiary);
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -693,8 +722,8 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           transition: all 0.2s ease;
         }
         .mohe-close-btn:hover {
-          background: rgba(44,40,37,0.05);
-          color: #2c2825;
+          background: var(--bg-hover);
+          color: var(--text-primary);
         }
 
         /* Tabs */
@@ -712,7 +741,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           padding: 10px 16px;
           border: none;
           background: transparent;
-          color: #b0a89e;
+          color: var(--text-tertiary);
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
@@ -721,11 +750,11 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           position: relative;
         }
         .mohe-tab:hover {
-          color: #8a8279;
-          background: rgba(44,40,37,0.02);
+          color: var(--text-secondary);
+          background: var(--bg-hover);
         }
         .mohe-tab--active {
-          color: #2c2825;
+          color: var(--text-primary);
           background: rgba(184,134,11,0.05);
         }
         .mohe-tab__code {
@@ -780,7 +809,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           gap: 10px;
           font-size: 11px;
           font-weight: 600;
-          color: #8a8279;
+          color: var(--text-secondary);
           text-transform: uppercase;
           letter-spacing: 0.08em;
           margin-bottom: 10px;
@@ -801,27 +830,27 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-input-icon {
           position: absolute;
           left: 12px;
-          color: #d5cdc4;
+          color: var(--text-muted);
           pointer-events: none;
           transition: color 0.2s ease;
         }
         .mohe-input {
           width: 100%;
           padding: 10px 14px 10px 38px;
-          background: #f8f5f1;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 8px;
-          color: #2c2825;
+          color: var(--text-primary);
           font-size: 13px;
           outline: none;
           transition: all 0.2s ease;
         }
         .mohe-input::placeholder {
-          color: #b0a89e;
+          color: var(--text-muted);
         }
         .mohe-input:focus {
           border-color: rgba(184,134,11,0.3);
-          background: #fffdf9;
+          background: var(--bg-card);
           box-shadow: 0 0 0 3px rgba(184,134,11,0.06);
         }
         .mohe-input:focus + .mohe-input-icon,
@@ -830,7 +859,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-hint {
           font-size: 11px;
-          color: #b0a89e;
+          color: var(--text-muted);
           margin-top: 6px;
           line-height: 1.4;
         }
@@ -850,22 +879,22 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 12px;
           padding: 14px 16px;
-          background: #faf7f4;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 10px;
           cursor: pointer;
           text-align: left;
           transition: all 0.2s ease;
-          color: #8a8279;
+          color: var(--text-secondary);
         }
         .mohe-provider-card:hover {
-          border-color: #d5cdc4;
-          background: #f5f0eb;
+          border-color: var(--border-default);
+          background: var(--bg-hover);
         }
         .mohe-provider-card--active {
           border-color: rgba(184,134,11,0.3);
           background: rgba(184,134,11,0.04);
-          color: #2c2825;
+          color: var(--text-primary);
           box-shadow: 0 0 24px rgba(184,134,11,0.04);
         }
         .mohe-provider-card__tag {
@@ -884,12 +913,12 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           width: 36px;
           height: 36px;
           border-radius: 8px;
-          background: #f0ebe5;
+          background: var(--bg-active);
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          color: #b0a89e;
+          color: var(--text-muted);
         }
         .mohe-provider-card--active .mohe-provider-card__icon {
           background: rgba(184,134,11,0.1);
@@ -902,10 +931,10 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-provider-card__desc {
           font-size: 10px;
-          color: #b0a89e;
+          color: var(--text-muted);
         }
         .mohe-provider-card--active .mohe-provider-card__desc {
-          color: #8a8279;
+          color: var(--text-secondary);
         }
         .mohe-provider-card__check {
           margin-left: auto;
@@ -926,10 +955,10 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 8px;
           padding: 9px 18px;
-          background: #f8f5f1;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 8px;
-          color: #8a8279;
+          color: var(--text-secondary);
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
@@ -937,7 +966,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-test-btn:hover {
           border-color: rgba(184,134,11,0.2);
-          color: #7c6a56;
+          color: var(--text-link);
           background: rgba(184,134,11,0.04);
         }
         .mohe-test-btn__arrow {
@@ -976,14 +1005,14 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-spinner {
           width: 14px;
           height: 14px;
-          border: 2px solid #e8e2db;
+          border: 2px solid var(--border-input);
           border-top-color: #b8860b;
           border-radius: 50%;
           animation: mohe-spin 0.7s linear infinite;
         }
         .mohe-spinner--light {
-          border-color: #d5cdc4;
-          border-top-color: #2c2825;
+          border-color: var(--border-default);
+          border-top-color: var(--text-primary);
         }
         @keyframes mohe-spin {
           to { transform: rotate(360deg); }
@@ -997,30 +1026,30 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-stat-card {
           padding: 16px;
-          background: #faf7f4;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 10px;
           transition: all 0.2s ease;
         }
         .mohe-stat-card:hover {
-          border-color: #d5cdc4;
-          background: #f5f0eb;
+          border-color: var(--border-default);
+          background: var(--bg-hover);
         }
         .mohe-stat-card__icon {
-          color: #b0a89e;
+          color: var(--text-muted);
           margin-bottom: 10px;
         }
         .mohe-stat-card__value {
           font-size: 22px;
           font-weight: 700;
-          color: #2c2825;
+          color: var(--text-primary);
           letter-spacing: -0.03em;
           line-height: 1;
           font-family: "SF Mono", "Fira Code", monospace;
         }
         .mohe-stat-card__label {
           font-size: 10px;
-          color: #b0a89e;
+          color: var(--text-muted);
           margin-top: 6px;
           text-transform: uppercase;
           letter-spacing: 0.06em;
@@ -1066,10 +1095,10 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 8px;
           padding: 10px 20px;
-          background: #f8f5f1;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 8px;
-          color: #8a8279;
+          color: var(--text-secondary);
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
@@ -1077,7 +1106,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-import-btn:hover {
           border-color: rgba(184,134,11,0.2);
-          color: #7c6a56;
+          color: var(--text-link);
           background: rgba(184,134,11,0.04);
         }
         .mohe-import-btn:disabled {
@@ -1130,13 +1159,13 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           width: 88px;
           height: 88px;
           border-radius: 14px;
-          background: linear-gradient(145deg, #f5f0eb 0%, #e8e0d6 100%);
-          border: 1px solid #e8e2db;
+          background: linear-gradient(145deg, var(--bg-input) 0%, var(--bg-active) 100%);
+          border: 1px solid var(--border-input);
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          box-shadow: 0 8px 30px rgba(44,40,37,0.08);
+          box-shadow: var(--shadow-md);
         }
         .mohe-avatar__emoji {
           font-size: 36px;
@@ -1151,7 +1180,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           position: absolute;
           inset: 0;
           border-radius: 14px;
-          background: rgba(44,40,37,0.4);
+          background: rgba(0,0,0,0.4);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1201,16 +1230,16 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 12px;
           padding: 12px 14px;
-          background: #faf7f4;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 10px;
         }
         .mohe-preview-avatar {
           width: 36px;
           height: 36px;
           border-radius: 8px;
-          background: linear-gradient(145deg, #f5f0eb, #e8e0d6);
-          border: 1px solid #e8e2db;
+          background: linear-gradient(145deg, var(--bg-input), var(--bg-active));
+          border: 1px solid var(--border-input);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1232,14 +1261,14 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-preview-name {
           font-size: 13px;
           font-weight: 600;
-          color: #2c2825;
+          color: var(--text-primary);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
         .mohe-preview-role {
           font-size: 10px;
-          color: #b0a89e;
+          color: var(--text-muted);
           margin-top: 1px;
         }
         .mohe-preview-badge {
@@ -1257,8 +1286,8 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
         /* Emoji Picker */
         .mohe-emoji-picker {
-          background: #faf7f4;
-          border: 1px solid #e8e2db;
+          background: var(--bg-input);
+          border: 1px solid var(--border-input);
           border-radius: 10px;
           padding: 14px;
         }
@@ -1268,7 +1297,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           justify-content: space-between;
           margin-bottom: 10px;
           font-size: 11px;
-          color: #8a8279;
+          color: var(--text-secondary);
         }
         .mohe-emoji-picker__count {
           font-family: "SF Mono", "Fira Code", monospace;
@@ -1294,7 +1323,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           transition: all 0.15s ease;
         }
         .mohe-emoji-btn:hover {
-          background: #f0ebe5;
+          background: var(--bg-active);
           transform: scale(1.12);
         }
         .mohe-emoji-btn--active {
@@ -1304,13 +1333,13 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
         /* Upload Zone */
         .mohe-upload-zone {
-          border: 1px dashed #d5cdc4;
+          border: 1px dashed var(--border-input);
           border-radius: 10px;
           padding: 28px;
           text-align: center;
           cursor: pointer;
           transition: all 0.25s ease;
-          background: #faf7f4;
+          background: var(--bg-input);
         }
         .mohe-upload-zone:hover {
           border-color: rgba(184,134,11,0.2);
@@ -1322,17 +1351,17 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           transform: scale(1.01);
         }
         .mohe-upload-zone__icon {
-          color: #b0a89e;
+          color: var(--text-muted);
           margin-bottom: 10px;
         }
         .mohe-upload-zone__text {
           font-size: 12px;
-          color: #8a8279;
+          color: var(--text-secondary);
           margin-bottom: 4px;
         }
         .mohe-upload-zone__hint {
           font-size: 10px;
-          color: #b0a89e;
+          color: var(--text-muted);
           font-family: "SF Mono", "Fira Code", monospace;
         }
         .mohe-accent-text {
@@ -1345,7 +1374,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           justify-content: space-between;
           padding: 16px 24px;
-          border-top: 1px solid rgba(44,40,37,0.06);
+          border-top: 1px solid var(--border-default);
           position: relative;
           z-index: 1;
         }

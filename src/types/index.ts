@@ -23,12 +23,15 @@ export interface ChatMessage {
   timestamp: string;
 }
 
+export type Theme = "cream" | "dark";
+
 export interface Settings {
   apiProvider: "openai" | "ollama";
   apiKey: string;
   baseUrl: string;
   model: string;
   embeddingModel: string;
+  theme: Theme;
 }
 
 export type ViewMode = "edit" | "preview" | "split";

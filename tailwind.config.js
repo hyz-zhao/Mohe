@@ -4,21 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 背景色 — 极浅奶油色调
-        "bg-deepest": "#f0ebe5",
-        "bg-sidebar": "#f7f4f0",
-        "bg-main": "#faf8f5",
-        "bg-card": "#ffffff",
-        "bg-input": "#f5f2ee",
-        "bg-hover": "#ece7e1",
-        "bg-active": "#e3ddd5",
+        // 背景色 — 通过 CSS 变量支持主题切换
+        "bg-deepest": "var(--bg-deepest)",
+        "bg-sidebar": "var(--bg-sidebar)",
+        "bg-main": "var(--bg-main)",
+        "bg-card": "var(--bg-card)",
+        "bg-input": "var(--bg-input)",
+        "bg-hover": "var(--bg-hover)",
+        "bg-active": "var(--bg-active)",
 
         // 文字色
-        "text-primary": "#1a1816",
-        "text-secondary": "#4a4540",
-        "text-tertiary": "#8a8279",
-        "text-muted": "#b5ada5",
-        "text-link": "#7c6a56",
+        "text-primary": "var(--text-primary)",
+        "text-secondary": "var(--text-secondary)",
+        "text-tertiary": "var(--text-tertiary)",
+        "text-muted": "var(--text-muted)",
+        "text-link": "var(--text-link)",
 
         // 强调色 — 暖琥珀金
         accent: "#b8860b",
@@ -29,9 +29,9 @@ export default {
         success: "#27ae60",
 
         // 边框
-        "border-default": "#e5e0da",
-        "border-card": "#ddd8d2",
-        "border-input": "#d5d0ca",
+        "border-default": "var(--border-default)",
+        "border-card": "var(--border-card)",
+        "border-input": "var(--border-input)",
       },
       borderRadius: {
         sm: "6px",
@@ -40,9 +40,9 @@ export default {
         xl: "18px",
       },
       boxShadow: {
-        sm: "0 1px 3px rgba(26,24,22,0.04)",
-        md: "0 4px 16px rgba(26,24,22,0.06)",
-        lg: "0 8px 32px rgba(26,24,22,0.08)",
+        sm: "var(--shadow-sm)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
       },
       fontSize: {
         xs: "11px",

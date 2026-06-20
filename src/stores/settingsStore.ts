@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Settings } from "@/types";
+import type { Settings, Theme } from "@/types";
 
 interface SettingsState extends Settings {
   setApiProvider: (provider: Settings["apiProvider"]) => void;
@@ -8,6 +8,7 @@ interface SettingsState extends Settings {
   setBaseUrl: (url: string) => void;
   setModel: (model: string) => void;
   setEmbeddingModel: (model: string) => void;
+  setTheme: (theme: Theme) => void;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: Settings = {
   baseUrl: "http://localhost:11434",
   model: "qwen2.5:latest",
   embeddingModel: "nomic-embed-text",
+  theme: "cream",
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -28,6 +30,7 @@ export const useSettingsStore = create<SettingsState>()(
       setBaseUrl: (baseUrl) => set({ baseUrl }),
       setModel: (model) => set({ model }),
       setEmbeddingModel: (embeddingModel) => set({ embeddingModel }),
+      setTheme: (theme) => set({ theme }),
     }),
     {
       name: "mohe-settings",
@@ -37,6 +40,7 @@ export const useSettingsStore = create<SettingsState>()(
         baseUrl: state.baseUrl,
         model: state.model,
         embeddingModel: state.embeddingModel,
+        theme: state.theme,
       }),
     }
   )
