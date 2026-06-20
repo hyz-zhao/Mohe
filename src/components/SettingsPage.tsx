@@ -551,7 +551,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
       <style>{`
         /* ═══════════════════════════════════════════
-           WARM PAPER — Settings Panel (Light Theme)
+           WARM CREAM — Settings Panel (Light Theme)
            ═══════════════════════════════════════════ */
 
         .mohe-settings-root {

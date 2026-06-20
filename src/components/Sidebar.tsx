@@ -474,11 +474,11 @@ function GraphPanel() {
               <g key={`edge-${i}`}>
                 <line
                   x1={from.x} y1={from.y} x2={to.x} y2={to.y}
-                  stroke="#d5cdc4" strokeWidth="1" strokeDasharray="3,3"
+                  stroke="#d5d0ca" strokeWidth="1" strokeDasharray="3,3"
                 />
                 <text
                   x={(from.x + to.x) / 2} y={(from.y + to.y) / 2 - 4}
-                  fill="#b0a89e" fontSize="6" textAnchor="middle"
+                  fill="#b5ada5" fontSize="6" textAnchor="middle"
                 >
                   {edge.label}
                 </text>
@@ -495,8 +495,8 @@ function GraphPanel() {
                 className="cursor-pointer"
                 onClick={() => { touchDocument(node.id); setCurrentDocId(node.id); }}
               >
-                <circle cx={pos.x} cy={pos.y} r="14" fill="#faf7f4" stroke="#b8860b" strokeWidth="1.5" />
-                <text x={pos.x} y={pos.y + 1} fill="#2c2825" fontSize="7" textAnchor="middle" dominantBaseline="middle">
+                <circle cx={pos.x} cy={pos.y} r="14" fill="#f7f4f0" stroke="#b8860b" strokeWidth="1.5" />
+                <text x={pos.x} y={pos.y + 1} fill="#1a1816" fontSize="7" textAnchor="middle" dominantBaseline="middle">
                   {node.title.slice(0, 2)}
                 </text>
                 <text x={pos.x} y={pos.y + 22} fill="#8a8279" fontSize="6" textAnchor="middle">

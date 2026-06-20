@@ -66,7 +66,7 @@ export default function CodeMirrorEditor({ content, onChange, editable = true }:
             fontSize: "15px",
             lineHeight: "1.7",
             backgroundColor: "transparent",
-            color: "#5a534d",
+            color: "#4a4540",
             fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
           },
           ".cm-content": {
@@ -77,20 +77,20 @@ export default function CodeMirrorEditor({ content, onChange, editable = true }:
             borderLeftColor: "#b8860b",
           },
           "&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": {
-            backgroundColor: "#e8e0d6",
+            backgroundColor: "#e3ddd5",
           },
           ".cm-panels": {
-            backgroundColor: "#faf7f4",
-            color: "#5a534d",
+            backgroundColor: "#faf8f5",
+            color: "#4a4540",
           },
           ".cm-panels.cm-panels-top": {
-            borderBottom: "1px solid #e8e2db",
+            borderBottom: "1px solid #e5e0da",
           },
           ".cm-panels.cm-panels-bottom": {
-            borderTop: "1px solid #e8e2db",
+            borderTop: "1px solid #e5e0da",
           },
           ".cm-searchMatch": {
-            backgroundColor: "#e8e0d6",
+            backgroundColor: "#e3ddd5",
             outline: "1px solid #b8860b",
           },
           ".cm-searchMatch.cm-searchMatch-selected": {
@@ -100,15 +100,15 @@ export default function CodeMirrorEditor({ content, onChange, editable = true }:
             backgroundColor: "#f0ebe5",
           },
           ".cm-selectionMatch": {
-            backgroundColor: "#e8e0d6",
+            backgroundColor: "#e3ddd5",
           },
           "&.cm-focused .cm-matchingBracket, &.cm-focused .cm-nonmatchingBracket": {
-            backgroundColor: "#e8e0d6",
+            backgroundColor: "#e3ddd5",
             outline: "1px solid #b8860b",
           },
           ".cm-gutters": {
-            backgroundColor: "#f5f0eb",
-            color: "#b0a89e",
+            backgroundColor: "#f7f4f0",
+            color: "#b5ada5",
             border: "none",
           },
           ".cm-activeLineGutter": {
@@ -116,29 +116,29 @@ export default function CodeMirrorEditor({ content, onChange, editable = true }:
             color: "#8a8279",
           },
           ".cm-foldPlaceholder": {
-            backgroundColor: "#f8f5f1",
+            backgroundColor: "#f5f2ee",
             color: "#8a8279",
-            border: "1px solid #d5cdc4",
+            border: "1px solid #d5d0ca",
             borderRadius: "4px",
           },
           ".cm-tooltip": {
-            backgroundColor: "#faf7f4",
-            border: "1px solid #e8e2db",
+            backgroundColor: "#faf8f5",
+            border: "1px solid #e5e0da",
             borderRadius: "8px",
-            color: "#5a534d",
+            color: "#4a4540",
           },
           ".cm-tooltip .cm-tooltip-arrow:before": {
-            borderTopColor: "#e8e2db",
-            borderBottomColor: "#e8e2db",
+            borderTopColor: "#e5e0da",
+            borderBottomColor: "#e5e0da",
           },
           ".cm-tooltip .cm-tooltip-arrow:after": {
-            borderTopColor: "#faf7f4",
-            borderBottomColor: "#faf7f4",
+            borderTopColor: "#faf8f5",
+            borderBottomColor: "#faf8f5",
           },
           ".cm-tooltip-autocomplete": {
             "& > ul > li[aria-selected]": {
-              backgroundColor: "#e8e0d6",
-              color: "#2c2825",
+              backgroundColor: "#e3ddd5",
+              color: "#1a1816",
             },
           },
           ".cm-line": {
@@ -148,7 +148,7 @@ export default function CodeMirrorEditor({ content, onChange, editable = true }:
             overflow: "auto",
           },
           ".cm-placeholder": {
-            color: "#b0a89e",
+            color: "#b5ada5",
           },
         }),
         EditorState.readOnly.of(!editable),
