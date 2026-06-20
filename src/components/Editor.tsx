@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "@/stores/appStore";
 import { useEditorStore } from "@/stores/editorStore";
-import { List, Edit3, Eye, MoreHorizontal, Save } from "lucide-react";
+import { List, Edit3, Eye, MoreHorizontal, Tag, Plus, Save } from "lucide-react";
 import CodeMirrorEditor from "./CodeMirrorEditor";
 import katex from "katex";
 import mermaid from "mermaid";
@@ -9,15 +9,15 @@ import mermaid from "mermaid";
 // Initialize mermaid
 mermaid.initialize({
   startOnLoad: false,
-  theme: "dark",
+  theme: "neutral",
   securityLevel: "loose",
   themeVariables: {
-    primaryColor: "#1a3a5c",
-    primaryTextColor: "#f1f5f9",
-    primaryBorderColor: "#3b82f6",
-    lineColor: "#64748b",
-    secondaryColor: "#1e293b",
-    tertiaryColor: "#0f1520",
+    primaryColor: "#e8e0d6",
+    primaryTextColor: "#2c2825",
+    primaryBorderColor: "#b8860b",
+    lineColor: "#8a8279",
+    secondaryColor: "#f5f0eb",
+    tertiaryColor: "#faf7f4",
   },
 });
 
@@ -126,6 +126,9 @@ export default function Editor() {
             <span className="text-xs">{saveFlash ? "已保存" : "保存"}</span>
           </button>
           <button className="btn-ghost">
+            <Plus size={12} />
+          </button>
+          <button className="btn-ghost">
             <MoreHorizontal size={14} />
           </button>
         </div>
@@ -143,6 +146,19 @@ export default function Editor() {
             className="w-full text-2xl font-bold text-text-primary mb-4 bg-transparent outline-none border-none placeholder-text-muted"
             placeholder="未命名文档"
           />
+
+          {/* Tags */}
+          <div className="flex items-center gap-2 mb-6">
+            <span className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary">
+              # 设计原则
+            </span>
+            <span className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary">
+              # 方法论
+            </span>
+            <button className="text-xs text-text-muted hover:text-text-link transition-colors">
+              + 添加标签
+            </button>
+          </div>
 
           <div className="h-px bg-border-default mb-6" />
 
@@ -224,7 +240,7 @@ function MarkdownPreview({ content }: { content: string }) {
         elements.push(
           <pre
             key={`code-${codeBlockStart}`}
-            className="bg-[#0d1117] rounded-lg p-4 my-4 overflow-x-auto text-sm text-text-secondary font-mono"
+            className="bg-[#f5f0eb] rounded-lg p-4 my-4 overflow-x-auto text-sm text-text-secondary font-mono border border-border-default"
           >
             <code>{code}</code>
           </pre>

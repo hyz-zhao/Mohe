@@ -82,7 +82,7 @@ export default function Sidebar() {
             style={{
               background: userInfo.avatar.startsWith("data:")
                 ? "none"
-                : "linear-gradient(to-br, #0ea5e9, #06b6d4)",
+                : "linear-gradient(to-br, #b8860b, #d4a017)",
             }}
           >
             {userInfo.avatar.startsWith("data:") ? (
@@ -474,11 +474,11 @@ function GraphPanel() {
               <g key={`edge-${i}`}>
                 <line
                   x1={from.x} y1={from.y} x2={to.x} y2={to.y}
-                  stroke="#334155" strokeWidth="1" strokeDasharray="3,3"
+                  stroke="#d5cdc4" strokeWidth="1" strokeDasharray="3,3"
                 />
                 <text
                   x={(from.x + to.x) / 2} y={(from.y + to.y) / 2 - 4}
-                  fill="#64748b" fontSize="6" textAnchor="middle"
+                  fill="#b0a89e" fontSize="6" textAnchor="middle"
                 >
                   {edge.label}
                 </text>
@@ -495,11 +495,11 @@ function GraphPanel() {
                 className="cursor-pointer"
                 onClick={() => { touchDocument(node.id); setCurrentDocId(node.id); }}
               >
-                <circle cx={pos.x} cy={pos.y} r="14" fill="#1e293b" stroke="#3b82f6" strokeWidth="1.5" />
-                <text x={pos.x} y={pos.y + 1} fill="#f1f5f9" fontSize="7" textAnchor="middle" dominantBaseline="middle">
+                <circle cx={pos.x} cy={pos.y} r="14" fill="#faf7f4" stroke="#b8860b" strokeWidth="1.5" />
+                <text x={pos.x} y={pos.y + 1} fill="#2c2825" fontSize="7" textAnchor="middle" dominantBaseline="middle">
                   {node.title.slice(0, 2)}
                 </text>
-                <text x={pos.x} y={pos.y + 22} fill="#94a3b8" fontSize="6" textAnchor="middle">
+                <text x={pos.x} y={pos.y + 22} fill="#8a8279" fontSize="6" textAnchor="middle">
                   {node.title.length > 6 ? node.title.slice(0, 6) + "…" : node.title}
                 </text>
               </g>

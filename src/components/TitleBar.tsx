@@ -29,7 +29,7 @@ export default function TitleBar() {
           <MoreHorizontal size={14} />
         </button>
         <div className="ml-2 pl-2 border-l border-border-default flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center shrink-0" style={{ background: userInfo.avatar.startsWith("data:") ? "none" : "linear-gradient(to-br, #0ea5e9, #06b6d4)" }}>
+          <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center shrink-0" style={{ background: userInfo.avatar.startsWith("data:") ? "none" : "linear-gradient(to-br, #b8860b, #d4a017)" }}>
             {userInfo.avatar.startsWith("data:") ? (
               <img src={userInfo.avatar} alt="avatar" className="w-full h-full object-cover" />
             ) : (

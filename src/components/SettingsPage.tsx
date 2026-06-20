@@ -551,7 +551,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
 
       <style>{`
         /* ═══════════════════════════════════════════
-           OBSIDIAN OBSERVATORY — Settings Panel
+           WARM PAPER — Settings Panel (Light Theme)
            ═══════════════════════════════════════════ */
 
         .mohe-settings-root {
@@ -574,14 +574,14 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           height: 500px;
           top: -150px;
           right: -100px;
-          background: radial-gradient(circle, rgba(217,165,80,0.06) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(184,134,11,0.04) 0%, transparent 70%);
         }
         .mohe-ambient-orb--2 {
           width: 400px;
           height: 400px;
           bottom: -100px;
           left: -80px;
-          background: radial-gradient(circle, rgba(180,140,60,0.04) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(184,134,11,0.03) 0%, transparent 70%);
         }
 
         /* Overlay */
@@ -591,7 +591,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(5,7,12,0.75);
+          background: rgba(44,40,37,0.2);
           backdrop-filter: blur(8px);
           opacity: 0;
           transition: opacity 0.4s ease;
@@ -608,13 +608,13 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           max-height: 85vh;
           display: flex;
           flex-direction: column;
-          background: linear-gradient(165deg, #0e1219 0%, #0a0d14 40%, #080b10 100%);
-          border: 1px solid rgba(217,165,80,0.08);
+          background: linear-gradient(165deg, #fffdf9 0%, #faf7f4 40%, #f5f0eb 100%);
+          border: 1px solid rgba(184,134,11,0.1);
           border-radius: 14px;
           box-shadow:
-            0 30px 80px rgba(0,0,0,0.7),
-            0 0 0 1px rgba(255,255,255,0.02),
-            inset 0 1px 0 rgba(255,255,255,0.03);
+            0 30px 80px rgba(44,40,37,0.12),
+            0 0 0 1px rgba(44,40,37,0.03),
+            inset 0 1px 0 rgba(255,255,255,0.8);
           opacity: 0;
           transform: scale(0.96) translateY(12px);
           transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -632,8 +632,8 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           inset: 0;
           pointer-events: none;
           background-image:
-            linear-gradient(rgba(217,165,80,0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(217,165,80,0.015) 1px, transparent 1px);
+            linear-gradient(rgba(184,134,11,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(184,134,11,0.02) 1px, transparent 1px);
           background-size: 40px 40px;
           z-index: 0;
         }
@@ -644,7 +644,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           justify-content: space-between;
           padding: 20px 24px;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          border-bottom: 1px solid rgba(44,40,37,0.06);
           position: relative;
           z-index: 1;
         }
@@ -657,24 +657,24 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           width: 38px;
           height: 38px;
           border-radius: 10px;
-          background: linear-gradient(135deg, rgba(217,165,80,0.12), rgba(217,165,80,0.04));
-          border: 1px solid rgba(217,165,80,0.2);
+          background: linear-gradient(135deg, rgba(184,134,11,0.1), rgba(184,134,11,0.03));
+          border: 1px solid rgba(184,134,11,0.15);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #d9a550;
+          color: #b8860b;
         }
         .mohe-header__title {
           font-size: 16px;
           font-weight: 600;
-          color: #f0ece4;
+          color: #2c2825;
           letter-spacing: -0.02em;
           line-height: 1.2;
         }
         .mohe-header__subtitle {
           font-size: 9px;
           font-weight: 500;
-          color: rgba(217,165,80,0.4);
+          color: rgba(184,134,11,0.4);
           letter-spacing: 0.15em;
           font-family: "SF Mono", "Fira Code", monospace;
           margin-top: 2px;
@@ -685,7 +685,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           border-radius: 8px;
           border: none;
           background: transparent;
-          color: #5a5e68;
+          color: #b0a89e;
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -693,8 +693,8 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           transition: all 0.2s ease;
         }
         .mohe-close-btn:hover {
-          background: rgba(255,255,255,0.05);
-          color: #f0ece4;
+          background: rgba(44,40,37,0.05);
+          color: #2c2825;
         }
 
         /* Tabs */
@@ -712,7 +712,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           padding: 10px 16px;
           border: none;
           background: transparent;
-          color: #4a4e58;
+          color: #b0a89e;
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
@@ -721,21 +721,21 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           position: relative;
         }
         .mohe-tab:hover {
-          color: #8a8e98;
-          background: rgba(255,255,255,0.02);
+          color: #8a8279;
+          background: rgba(44,40,37,0.02);
         }
         .mohe-tab--active {
-          color: #f0ece4;
-          background: rgba(217,165,80,0.06);
+          color: #2c2825;
+          background: rgba(184,134,11,0.05);
         }
         .mohe-tab__code {
           font-size: 9px;
           font-family: "SF Mono", "Fira Code", monospace;
-          color: rgba(217,165,80,0.35);
+          color: rgba(184,134,11,0.35);
           letter-spacing: 0.05em;
         }
         .mohe-tab--active .mohe-tab__code {
-          color: rgba(217,165,80,0.6);
+          color: rgba(184,134,11,0.6);
         }
         .mohe-tab__icon {
           display: flex;
@@ -746,7 +746,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           bottom: 0;
           left: 50%;
           transform: translateX(-50%);
-          color: #d9a550;
+          color: #b8860b;
         }
 
         /* Content */
@@ -780,7 +780,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           gap: 10px;
           font-size: 11px;
           font-weight: 600;
-          color: #8a8e98;
+          color: #8a8279;
           text-transform: uppercase;
           letter-spacing: 0.08em;
           margin-bottom: 10px;
@@ -788,7 +788,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-label__code {
           font-family: "SF Mono", "Fira Code", monospace;
           font-size: 9px;
-          color: rgba(217,165,80,0.4);
+          color: rgba(184,134,11,0.4);
           letter-spacing: 0.05em;
         }
 
@@ -801,36 +801,36 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-input-icon {
           position: absolute;
           left: 12px;
-          color: #3a3e48;
+          color: #d5cdc4;
           pointer-events: none;
           transition: color 0.2s ease;
         }
         .mohe-input {
           width: 100%;
           padding: 10px 14px 10px 38px;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: #f8f5f1;
+          border: 1px solid #e8e2db;
           border-radius: 8px;
-          color: #f0ece4;
+          color: #2c2825;
           font-size: 13px;
           outline: none;
           transition: all 0.2s ease;
         }
         .mohe-input::placeholder {
-          color: #3a3e48;
+          color: #b0a89e;
         }
         .mohe-input:focus {
-          border-color: rgba(217,165,80,0.3);
-          background: rgba(217,165,80,0.02);
-          box-shadow: 0 0 0 3px rgba(217,165,80,0.06);
+          border-color: rgba(184,134,11,0.3);
+          background: #fffdf9;
+          box-shadow: 0 0 0 3px rgba(184,134,11,0.06);
         }
         .mohe-input:focus + .mohe-input-icon,
         .mohe-input:focus ~ .mohe-input-icon {
-          color: rgba(217,165,80,0.5);
+          color: rgba(184,134,11,0.5);
         }
         .mohe-hint {
           font-size: 11px;
-          color: #3a3e48;
+          color: #b0a89e;
           margin-top: 6px;
           line-height: 1.4;
         }
@@ -850,23 +850,23 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 12px;
           padding: 14px 16px;
-          background: rgba(255,255,255,0.015);
-          border: 1px solid rgba(255,255,255,0.05);
+          background: #faf7f4;
+          border: 1px solid #e8e2db;
           border-radius: 10px;
           cursor: pointer;
           text-align: left;
           transition: all 0.2s ease;
-          color: #6a6e78;
+          color: #8a8279;
         }
         .mohe-provider-card:hover {
-          border-color: rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.025);
+          border-color: #d5cdc4;
+          background: #f5f0eb;
         }
         .mohe-provider-card--active {
-          border-color: rgba(217,165,80,0.25);
-          background: rgba(217,165,80,0.04);
-          color: #f0ece4;
-          box-shadow: 0 0 24px rgba(217,165,80,0.04);
+          border-color: rgba(184,134,11,0.3);
+          background: rgba(184,134,11,0.04);
+          color: #2c2825;
+          box-shadow: 0 0 24px rgba(184,134,11,0.04);
         }
         .mohe-provider-card__tag {
           position: absolute;
@@ -875,25 +875,25 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           font-size: 8px;
           font-family: "SF Mono", "Fira Code", monospace;
           letter-spacing: 0.1em;
-          color: rgba(217,165,80,0.3);
+          color: rgba(184,134,11,0.3);
         }
         .mohe-provider-card--active .mohe-provider-card__tag {
-          color: rgba(217,165,80,0.5);
+          color: rgba(184,134,11,0.5);
         }
         .mohe-provider-card__icon {
           width: 36px;
           height: 36px;
           border-radius: 8px;
-          background: rgba(255,255,255,0.03);
+          background: #f0ebe5;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          color: #5a5e68;
+          color: #b0a89e;
         }
         .mohe-provider-card--active .mohe-provider-card__icon {
-          background: rgba(217,165,80,0.08);
-          color: #d9a550;
+          background: rgba(184,134,11,0.1);
+          color: #b8860b;
         }
         .mohe-provider-card__title {
           font-size: 13px;
@@ -902,18 +902,18 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-provider-card__desc {
           font-size: 10px;
-          color: #4a4e58;
+          color: #b0a89e;
         }
         .mohe-provider-card--active .mohe-provider-card__desc {
-          color: #6a6e78;
+          color: #8a8279;
         }
         .mohe-provider-card__check {
           margin-left: auto;
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: rgba(217,165,80,0.15);
-          color: #d9a550;
+          background: rgba(184,134,11,0.12);
+          color: #b8860b;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -926,25 +926,25 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 8px;
           padding: 9px 18px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.07);
+          background: #f8f5f1;
+          border: 1px solid #e8e2db;
           border-radius: 8px;
-          color: #8a8e98;
+          color: #8a8279;
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
         }
         .mohe-test-btn:hover {
-          border-color: rgba(217,165,80,0.2);
-          color: #c0b898;
-          background: rgba(217,165,80,0.04);
+          border-color: rgba(184,134,11,0.2);
+          color: #7c6a56;
+          background: rgba(184,134,11,0.04);
         }
         .mohe-test-btn__arrow {
           opacity: 0;
           transform: translateX(-4px);
           transition: all 0.2s ease;
-          color: rgba(217,165,80,0.5);
+          color: rgba(184,134,11,0.5);
         }
         .mohe-test-btn:hover .mohe-test-btn__arrow {
           opacity: 1;
@@ -963,10 +963,10 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           gap: 4px;
         }
         .mohe-status--success {
-          color: #6abf69;
+          color: #27ae60;
         }
         .mohe-status--error {
-          color: #d96060;
+          color: #c0392b;
         }
         .mohe-status--mt {
           margin-top: 8px;
@@ -976,14 +976,14 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-spinner {
           width: 14px;
           height: 14px;
-          border: 2px solid rgba(255,255,255,0.1);
-          border-top-color: #d9a550;
+          border: 2px solid #e8e2db;
+          border-top-color: #b8860b;
           border-radius: 50%;
           animation: mohe-spin 0.7s linear infinite;
         }
         .mohe-spinner--light {
-          border-color: rgba(255,255,255,0.2);
-          border-top-color: #fff;
+          border-color: #d5cdc4;
+          border-top-color: #2c2825;
         }
         @keyframes mohe-spin {
           to { transform: rotate(360deg); }
@@ -997,30 +997,30 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         }
         .mohe-stat-card {
           padding: 16px;
-          background: rgba(255,255,255,0.015);
-          border: 1px solid rgba(255,255,255,0.04);
+          background: #faf7f4;
+          border: 1px solid #e8e2db;
           border-radius: 10px;
           transition: all 0.2s ease;
         }
         .mohe-stat-card:hover {
-          border-color: rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.025);
+          border-color: #d5cdc4;
+          background: #f5f0eb;
         }
         .mohe-stat-card__icon {
-          color: #3a3e48;
+          color: #b0a89e;
           margin-bottom: 10px;
         }
         .mohe-stat-card__value {
           font-size: 22px;
           font-weight: 700;
-          color: #f0ece4;
+          color: #2c2825;
           letter-spacing: -0.03em;
           line-height: 1;
           font-family: "SF Mono", "Fira Code", monospace;
         }
         .mohe-stat-card__label {
           font-size: 10px;
-          color: #3a3e48;
+          color: #b0a89e;
           margin-top: 6px;
           text-transform: uppercase;
           letter-spacing: 0.06em;
@@ -1032,7 +1032,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 8px;
           padding: 10px 20px;
-          background: linear-gradient(135deg, rgba(106,191,105,0.85), rgba(80,170,80,0.85));
+          background: linear-gradient(135deg, #27ae60, #219a52);
           border: none;
           border-radius: 8px;
           color: #fff;
@@ -1040,10 +1040,10 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 2px 12px rgba(106,191,105,0.15);
+          box-shadow: 0 2px 12px rgba(39,174,96,0.15);
         }
         .mohe-export-btn:hover {
-          box-shadow: 0 4px 20px rgba(106,191,105,0.25);
+          box-shadow: 0 4px 20px rgba(39,174,96,0.25);
           transform: translateY(-1px);
         }
         .mohe-export-btn:disabled {
@@ -1066,19 +1066,19 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 8px;
           padding: 10px 20px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.07);
+          background: #f8f5f1;
+          border: 1px solid #e8e2db;
           border-radius: 8px;
-          color: #8a8e98;
+          color: #8a8279;
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
         }
         .mohe-import-btn:hover {
-          border-color: rgba(217,165,80,0.2);
-          color: #c0b898;
-          background: rgba(217,165,80,0.04);
+          border-color: rgba(184,134,11,0.2);
+          color: #7c6a56;
+          background: rgba(184,134,11,0.04);
         }
         .mohe-import-btn:disabled {
           opacity: 0.5;
@@ -1088,7 +1088,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           opacity: 0;
           transform: translateX(-4px);
           transition: all 0.2s ease;
-          color: rgba(217,165,80,0.5);
+          color: rgba(184,134,11,0.5);
         }
         .mohe-import-btn:hover .mohe-import-btn__arrow {
           opacity: 1;
@@ -1116,7 +1116,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           position: absolute;
           width: 12px;
           height: 12px;
-          border-color: rgba(217,165,80,0.25);
+          border-color: rgba(184,134,11,0.25);
           border-style: solid;
           border-width: 0;
           z-index: 2;
@@ -1130,13 +1130,13 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           width: 88px;
           height: 88px;
           border-radius: 14px;
-          background: linear-gradient(145deg, #141820 0%, #0e1118 100%);
-          border: 1px solid rgba(255,255,255,0.05);
+          background: linear-gradient(145deg, #f5f0eb 0%, #e8e0d6 100%);
+          border: 1px solid #e8e2db;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+          box-shadow: 0 8px 30px rgba(44,40,37,0.08);
         }
         .mohe-avatar__emoji {
           font-size: 36px;
@@ -1151,7 +1151,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           position: absolute;
           inset: 0;
           border-radius: 14px;
-          background: rgba(0,0,0,0.55);
+          background: rgba(44,40,37,0.4);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1167,7 +1167,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           height: 32px;
           border-radius: 8px;
           border: none;
-          background: rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.2);
           color: #fff;
           cursor: pointer;
           display: flex;
@@ -1176,7 +1176,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           transition: all 0.15s ease;
         }
         .mohe-avatar__action:hover {
-          background: rgba(255,255,255,0.2);
+          background: rgba(255,255,255,0.35);
           transform: scale(1.08);
         }
 
@@ -1188,7 +1188,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           font-size: 9px;
           font-family: "SF Mono", "Fira Code", monospace;
           letter-spacing: 0.15em;
-          color: rgba(217,165,80,0.35);
+          color: rgba(184,134,11,0.35);
           margin-bottom: 10px;
           text-transform: uppercase;
         }
@@ -1201,16 +1201,16 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 12px;
           padding: 12px 14px;
-          background: rgba(255,255,255,0.015);
-          border: 1px solid rgba(255,255,255,0.04);
+          background: #faf7f4;
+          border: 1px solid #e8e2db;
           border-radius: 10px;
         }
         .mohe-preview-avatar {
           width: 36px;
           height: 36px;
           border-radius: 8px;
-          background: linear-gradient(145deg, #141820, #0e1118);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: linear-gradient(145deg, #f5f0eb, #e8e0d6);
+          border: 1px solid #e8e2db;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1232,14 +1232,14 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-preview-name {
           font-size: 13px;
           font-weight: 600;
-          color: #f0ece4;
+          color: #2c2825;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
         .mohe-preview-role {
           font-size: 10px;
-          color: #3a3e48;
+          color: #b0a89e;
           margin-top: 1px;
         }
         .mohe-preview-badge {
@@ -1249,16 +1249,16 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           letter-spacing: 0.1em;
           padding: 3px 8px;
           border-radius: 4px;
-          background: rgba(217,165,80,0.1);
-          color: rgba(217,165,80,0.7);
-          border: 1px solid rgba(217,165,80,0.15);
+          background: rgba(184,134,11,0.08);
+          color: rgba(184,134,11,0.7);
+          border: 1px solid rgba(184,134,11,0.15);
           flex-shrink: 0;
         }
 
         /* Emoji Picker */
         .mohe-emoji-picker {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.05);
+          background: #faf7f4;
+          border: 1px solid #e8e2db;
           border-radius: 10px;
           padding: 14px;
         }
@@ -1268,12 +1268,12 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           justify-content: space-between;
           margin-bottom: 10px;
           font-size: 11px;
-          color: #5a5e68;
+          color: #8a8279;
         }
         .mohe-emoji-picker__count {
           font-family: "SF Mono", "Fira Code", monospace;
           font-size: 9px;
-          color: rgba(217,165,80,0.3);
+          color: rgba(184,134,11,0.3);
         }
         .mohe-emoji-grid {
           display: grid;
@@ -1294,49 +1294,49 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           transition: all 0.15s ease;
         }
         .mohe-emoji-btn:hover {
-          background: rgba(255,255,255,0.04);
+          background: #f0ebe5;
           transform: scale(1.12);
         }
         .mohe-emoji-btn--active {
-          background: rgba(217,165,80,0.1);
-          border-color: rgba(217,165,80,0.25);
+          background: rgba(184,134,11,0.08);
+          border-color: rgba(184,134,11,0.25);
         }
 
         /* Upload Zone */
         .mohe-upload-zone {
-          border: 1px dashed rgba(255,255,255,0.06);
+          border: 1px dashed #d5cdc4;
           border-radius: 10px;
           padding: 28px;
           text-align: center;
           cursor: pointer;
           transition: all 0.25s ease;
-          background: rgba(255,255,255,0.008);
+          background: #faf7f4;
         }
         .mohe-upload-zone:hover {
-          border-color: rgba(217,165,80,0.15);
-          background: rgba(217,165,80,0.02);
+          border-color: rgba(184,134,11,0.2);
+          background: rgba(184,134,11,0.02);
         }
         .mohe-upload-zone--active {
-          border-color: rgba(217,165,80,0.35);
-          background: rgba(217,165,80,0.04);
+          border-color: rgba(184,134,11,0.35);
+          background: rgba(184,134,11,0.04);
           transform: scale(1.01);
         }
         .mohe-upload-zone__icon {
-          color: #2a2e38;
+          color: #b0a89e;
           margin-bottom: 10px;
         }
         .mohe-upload-zone__text {
           font-size: 12px;
-          color: #5a5e68;
+          color: #8a8279;
           margin-bottom: 4px;
         }
         .mohe-upload-zone__hint {
           font-size: 10px;
-          color: #2a2e38;
+          color: #b0a89e;
           font-family: "SF Mono", "Fira Code", monospace;
         }
         .mohe-accent-text {
-          color: rgba(217,165,80,0.7);
+          color: rgba(184,134,11,0.7);
         }
 
         /* Footer */
@@ -1345,7 +1345,7 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           justify-content: space-between;
           padding: 16px 24px;
-          border-top: 1px solid rgba(255,255,255,0.04);
+          border-top: 1px solid rgba(44,40,37,0.06);
           position: relative;
           z-index: 1;
         }
@@ -1354,15 +1354,15 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           align-items: center;
           gap: 6px;
           font-size: 10px;
-          color: #3a3e48;
+          color: #b0a89e;
           font-family: "SF Mono", "Fira Code", monospace;
         }
         .mohe-footer__dot {
           width: 5px;
           height: 5px;
           border-radius: 50%;
-          background: #6abf69;
-          box-shadow: 0 0 6px rgba(106,191,105,0.4);
+          background: #27ae60;
+          box-shadow: 0 0 6px rgba(39,174,96,0.3);
         }
         .mohe-footer__actions {
           display: flex;
@@ -1371,18 +1371,18 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
         .mohe-btn-ghost {
           padding: 8px 18px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.06);
+          border: 1px solid #e8e2db;
           background: transparent;
-          color: #5a5e68;
+          color: #8a8279;
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s ease;
         }
         .mohe-btn-ghost:hover {
-          border-color: rgba(255,255,255,0.12);
-          color: #8a8e98;
-          background: rgba(255,255,255,0.02);
+          border-color: #d5cdc4;
+          color: #5a534d;
+          background: #f5f0eb;
         }
         .mohe-btn-primary {
           display: inline-flex;
@@ -1391,16 +1391,16 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           padding: 8px 20px;
           border-radius: 8px;
           border: none;
-          background: linear-gradient(135deg, #d9a550, #c4923e);
-          color: #0a0d14;
+          background: linear-gradient(135deg, #b8860b, #9a7209);
+          color: #fff;
           font-size: 13px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 2px 12px rgba(217,165,80,0.2);
+          box-shadow: 0 2px 12px rgba(184,134,11,0.15);
         }
         .mohe-btn-primary:hover {
-          box-shadow: 0 4px 20px rgba(217,165,80,0.3);
+          box-shadow: 0 4px 20px rgba(184,134,11,0.25);
           transform: translateY(-1px);
         }
 
@@ -1412,11 +1412,11 @@ export default function SettingsPage({ onClose }: SettingsPageProps) {
           background: transparent;
         }
         .mohe-content::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.06);
+          background: #d5cdc4;
           border-radius: 2px;
         }
         .mohe-content::-webkit-scrollbar-thumb:hover {
-          background: rgba(255,255,255,0.1);
+          background: #b0a89e;
         }
       `}</style>
     </div>
