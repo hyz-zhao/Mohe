@@ -18,6 +18,8 @@ import {
 import { useEditorStore } from "@/stores/editorStore";
 import { useAppStore } from "@/stores/appStore";
 import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
+import type { FileTreeNode } from "@/types";
 import SettingsPage from "./SettingsPage";
 
 interface ActivityItem {
@@ -37,7 +39,7 @@ const activityItems: ActivityItem[] = [
 
 export default function Sidebar() {
   const { setCurrentDocId, currentDocId } = useEditorStore();
-  const { userInfo, addDocument, documents, touchDocument } = useAppStore();
+  const { userInfo, touchDocument } = useAppStore();
   const [showSettings, setShowSettings] = useState(false);
   const [activeActivity, setActiveActivity] = useState("explorer");
 
@@ -108,20 +110,8 @@ export default function Sidebar() {
         <div className="flex-1 overflow-y-auto">
           {activeActivity === "explorer" && (
             <ExplorerPanel
-              documents={documents}
               currentDocId={currentDocId}
               onDocClick={(id) => { touchDocument(id); setCurrentDocId(id); }}
-              onNewDoc={() => {
-                const newDoc = {
-                  id: Date.now().toString(),
-                  title: "未命名文档",
-                  content: "",
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                };
-                addDocument(newDoc);
-                setCurrentDocId(newDoc.id);
-              }}
             />
           )}
           {activeActivity === "search" && <SearchPanel />}
@@ -139,110 +129,307 @@ export default function Sidebar() {
 
 /* ─── Explorer Panel ─── */
 function ExplorerPanel({
-  documents, currentDocId, onDocClick, onNewDoc,
+  currentDocId, onDocClick,
 }: {
-  documents: { id: string; title: string; starred?: boolean }[];
   currentDocId: string | null;
   onDocClick: (id: string) => void;
-  onNewDoc: () => void;
 }) {
-  const { trashDocument, toggleStar } = useAppStore();
-  const [expanded, setExpanded] = useState({ docs: true, project: true });
+  const { fileTree, addFolder, addFile, renameFileNode, deleteFileNode, trashDocument, toggleStar, documents } = useAppStore();
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    "folder-docs": true,
+    "folder-project": true,
+  });
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    targetId: string | null;
+    targetType: "folder" | "root" | null;
+  } | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+
+  const toggleFolder = (id: string) => {
+    setExpandedFolders((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, targetId: string | null, targetType: "folder" | "root") => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY, targetId, targetType });
+  };
+
+  const closeContextMenu = () => setContextMenu(null);
+
+  const handleNewFolder = (targetId: string | null) => {
+    let parentId = targetId;
+    if (parentId) {
+      const node = findNode(fileTree, parentId);
+      if (node && node.type === "file") {
+        parentId = findParentId(fileTree, parentId);
+      }
+    }
+    addFolder(parentId, "未命名文件夹");
+    closeContextMenu();
+  };
+
+  const handleNewFile = (targetId: string | null) => {
+    let parentId = targetId;
+    if (parentId) {
+      const node = findNode(fileTree, parentId);
+      if (node && node.type === "file") {
+        parentId = findParentId(fileTree, parentId);
+      }
+    }
+    addFile(parentId, "未命名文档");
+    closeContextMenu();
+  };
+
+  const handleDelete = (nodeId: string, docId?: string) => {
+    if (docId) {
+      trashDocument(docId);
+    }
+    deleteFileNode(nodeId);
+    closeContextMenu();
+  };
+
+  const startRename = (nodeId: string, currentName: string) => {
+    setEditingId(nodeId);
+    setEditName(currentName);
+    closeContextMenu();
+  };
+
+  const finishRename = (nodeId: string) => {
+    if (editName.trim()) {
+      renameFileNode(nodeId, editName.trim());
+    }
+    setEditingId(null);
+  };
+
+  const getFileIcon = (name: string) => {
+    const ext = name.split(".").pop()?.toLowerCase();
+    if (["md", "txt"].includes(ext || "")) return <FileText size={12} className="text-text-muted shrink-0" />;
+    if (["json"].includes(ext || "")) return <FileText size={12} className="text-amber-500 shrink-0" />;
+    if (["ts", "tsx", "js", "jsx"].includes(ext || "")) return <FileText size={12} className="text-blue-500 shrink-0" />;
+    if (["html", "htm"].includes(ext || "")) return <FileText size={12} className="text-orange-500 shrink-0" />;
+    if (["css", "scss"].includes(ext || "")) return <FileText size={12} className="text-purple-500 shrink-0" />;
+    return <FileText size={12} className="text-text-muted shrink-0" />;
+  };
+
+  const renderNode = (node: FileTreeNode, depth: number) => {
+    const paddingLeft = 16 + depth * 16;
+    const doc = node.docId ? documents.find((d) => d.id === node.docId) : null;
+
+    if (node.type === "folder") {
+      const isExpanded = expandedFolders[node.id] !== false;
+      return (
+        <div key={node.id}>
+          <div
+            className={`flex items-center gap-1 w-full text-left py-1 text-xs transition-colors group ${
+              "text-text-secondary hover:bg-bg-hover"
+            }`}
+            style={{ paddingLeft }}
+            onContextMenu={(e) => handleContextMenu(e, node.id, "folder")}
+          >
+            <button
+              onClick={(e) => { e.stopPropagation(); toggleFolder(node.id); }}
+              className="shrink-0 text-text-muted"
+            >
+              {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            </button>
+            <span
+              className="flex items-center flex-1 min-w-0"
+              onClick={() => toggleFolder(node.id)}
+            >
+              <FolderIcon size={12} className="text-text-muted shrink-0" />
+              {editingId === node.id ? (
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onBlur={() => finishRename(node.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") finishRename(node.id);
+                    if (e.key === "Escape") setEditingId(null);
+                  }}
+                  className="flex-1 px-1 py-0.5 bg-bg-input border border-border-input rounded text-xs text-text-primary focus:outline-none focus:border-accent min-w-0"
+                  autoFocus
+                />
+              ) : (
+                <span className="flex-1 truncate cursor-pointer">
+                  {node.name}
+                </span>
+              )}
+            </span>
+            <span className="ml-auto text-text-muted text-[10px] mr-1">
+              {node.children?.length || 0}
+            </span>
+          </div>
+          {isExpanded && node.children && (
+            <div>
+              {node.children.map((child) => renderNode(child, depth + 1))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={node.id}
+        className={`flex items-center gap-1.5 w-full text-left py-1 text-xs transition-colors group ${
+          currentDocId === node.docId
+            ? "bg-bg-active text-text-primary"
+            : "text-text-tertiary hover:bg-bg-hover hover:text-text-secondary"
+        }`}
+        style={{ paddingLeft }}
+        onContextMenu={(e) => handleContextMenu(e, node.id, "root")}
+      >
+        {getFileIcon(node.name)}
+        {editingId === node.id ? (
+          <input
+            type="text"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            onBlur={() => finishRename(node.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") finishRename(node.id);
+              if (e.key === "Escape") setEditingId(null);
+            }}
+            className="flex-1 px-1 py-0.5 bg-bg-input border border-border-input rounded text-xs text-text-primary focus:outline-none focus:border-accent min-w-0"
+            autoFocus
+          />
+        ) : (
+          <button
+            onClick={() => node.docId && onDocClick(node.docId)}
+            className="flex items-center gap-1.5 flex-1 min-w-0"
+          >
+            <span className="truncate">{node.name}</span>
+          </button>
+        )}
+        {doc && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleStar(node.docId!);
+            }}
+            className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-amber-400 transition-all shrink-0"
+            title="收藏"
+          >
+            <Star size={10} className={doc.starred ? "text-amber-400 fill-amber-400" : ""} />
+          </button>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="py-1">
-      <button
-        onClick={onNewDoc}
-        className="flex items-center gap-2 w-full px-4 py-1.5 text-xs text-text-tertiary hover:bg-bg-hover hover:text-text-secondary transition-colors"
-      >
-        <Plus size={12} />
-        <span>新建文档</span>
-      </button>
+    <div
+      className="py-1 relative"
+      onContextMenu={(e) => handleContextMenu(e, null, "root")}
+      onClick={closeContextMenu}
+    >
+      {fileTree.map((node) => renderNode(node, 0))}
 
-      <div className="mt-1">
-        <button
-          onClick={() => setExpanded((e) => ({ ...e, docs: !e.docs }))}
-          className="flex items-center gap-1 px-4 py-1 text-text-secondary text-xs font-medium w-full hover:bg-bg-hover transition-colors"
+      {/* Context Menu - rendered via portal to avoid overflow clipping */}
+      {contextMenu && createPortal(
+        <div
+          className="fixed z-50 bg-bg-card border border-border-default rounded-md shadow-lg py-1 min-w-[140px]"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
         >
-          {expanded.docs ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          <span>文档</span>
-          <span className="ml-auto text-text-muted text-[10px]">{documents.length}</span>
-        </button>
-        {expanded.docs && documents.map((doc) => (
-          <div
-            key={doc.id}
-            className={`flex items-center gap-1.5 w-full text-left px-4 py-1 text-xs transition-colors group ${
-              currentDocId === doc.id
-                ? "bg-bg-active text-text-primary"
-                : "text-text-tertiary hover:bg-bg-hover hover:text-text-secondary"
-            }`}
-          >
-            <button
-              onClick={() => onDocClick(doc.id)}
-              className="flex items-center gap-1.5 flex-1 min-w-0"
-            >
-              <FileText size={12} className="text-text-muted shrink-0" />
-              <span className="truncate">{doc.title}</span>
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                trashDocument(doc.id);
-              }}
-              className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-danger transition-all shrink-0"
-              title="删除"
-            >
-              <Trash size={10} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleStar(doc.id);
-              }}
-              className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-amber-400 transition-all shrink-0"
-              title="收藏"
-            >
-              <Star size={10} className={doc.starred ? "text-amber-400 fill-amber-400" : ""} />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-1">
-        <button
-          onClick={() => setExpanded((e) => ({ ...e, project: !e.project }))}
-          className="flex items-center gap-1 px-4 py-1 text-text-secondary text-xs font-medium w-full hover:bg-bg-hover transition-colors"
-        >
-          {expanded.project ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          <span>项目文件</span>
-        </button>
-        {expanded.project && [
-          ".gitignore",
-          "软件设计说明书_SDD.md",
-          "设计开发文档.md",
-          "index.html",
-          "package.json",
-          "README.md",
-          "tailwind.config.js",
-          "tsconfig.json",
-          "vite.config.ts",
-        ].map((file) => (
           <button
-            key={file}
-            className="flex items-center gap-1.5 w-full text-left px-4 py-1 text-xs text-text-tertiary hover:bg-bg-hover hover:text-text-secondary transition-colors"
+            onClick={() => handleNewFolder(contextMenu.targetId)}
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-secondary hover:bg-bg-hover transition-colors"
           >
-            <FileText size={12} className="text-text-muted shrink-0" />
-            <span className="truncate">{file}</span>
+            <FolderIcon size={12} />
+            <span>新建文件夹</span>
           </button>
-        ))}
-      </div>
+          <button
+            onClick={() => handleNewFile(contextMenu.targetId)}
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-secondary hover:bg-bg-hover transition-colors"
+          >
+            <FileText size={12} />
+            <span>新建文件</span>
+          </button>
+          {contextMenu.targetId && (
+            <>
+              <div className="border-t border-border-default my-1" />
+              <button
+                onClick={() => {
+                  const node = findNode(fileTree, contextMenu.targetId!);
+                  if (node) startRename(node.id, node.name);
+                }}
+                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-secondary hover:bg-bg-hover transition-colors"
+              >
+                <RotateCcw size={12} />
+                <span>重命名</span>
+              </button>
+              <button
+                onClick={() => {
+                  const node = findNode(fileTree, contextMenu.targetId!);
+                  if (node) handleDelete(node.id, node.docId);
+                }}
+                className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-danger hover:bg-bg-hover transition-colors"
+              >
+                <Trash size={12} />
+                <span>删除</span>
+              </button>
+            </>
+          )}
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
 
+function FolderIcon({ size, className }: { size: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+
+function findNode(tree: FileTreeNode[], id: string): FileTreeNode | null {
+  for (const node of tree) {
+    if (node.id === id) return node;
+    if (node.children) {
+      const found = findNode(node.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function findParentId(tree: FileTreeNode[], id: string): string | null {
+  for (const node of tree) {
+    if (node.children) {
+      for (const child of node.children) {
+        if (child.id === id) return node.id;
+      }
+      const found = findParentId(node.children, id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 /* ─── Search Panel ─── */
 function SearchPanel() {
-  const { documents, setCurrentDocId, touchDocument } = useAppStore();
+  const { documents, touchDocument } = useAppStore();
+  const { setCurrentDocId } = useEditorStore();
   const [query, setQuery] = useState("");
 
   const results = useMemo(() => {
@@ -315,7 +502,8 @@ function SearchPanel() {
 
 /* ─── Tags Panel ─── */
 function TagsPanel() {
-  const { tags, documents, addTag, removeTag, renameTag, toggleTagOnDoc, setCurrentDocId, touchDocument } = useAppStore();
+  const { tags, documents, addTag, removeTag, renameTag, touchDocument } = useAppStore();
+  const { setCurrentDocId } = useEditorStore();
   const [newTagName, setNewTagName] = useState("");
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -431,7 +619,8 @@ function TagsPanel() {
 
 /* ─── Graph Panel ─── */
 function GraphPanel() {
-  const { documents, tags, setCurrentDocId, touchDocument } = useAppStore();
+  const { documents, tags, touchDocument } = useAppStore();
+  const { setCurrentDocId } = useEditorStore();
 
   // Build graph: nodes = documents, edges = shared tags
   const nodes = documents.map((d) => ({ id: d.id, title: d.title }));
@@ -536,7 +725,8 @@ function GraphPanel() {
 
 /* ─── Starred Panel ─── */
 function StarredPanel() {
-  const { documents, setCurrentDocId, touchDocument, toggleStar } = useAppStore();
+  const { documents, touchDocument, toggleStar } = useAppStore();
+  const { setCurrentDocId } = useEditorStore();
   const starredDocs = documents.filter((d) => d.starred);
 
   return (

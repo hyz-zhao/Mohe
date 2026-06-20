@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Document } from "@/types";
+import type { Document, FileTreeNode } from "@/types";
 
 export interface UserInfo {
   username: string;
@@ -32,6 +32,7 @@ interface AppState {
   userInfo: UserInfo;
   tags: TagItem[];
   trashedDocs: TrashedDoc[];
+  fileTree: FileTreeNode[];
 
   setDocuments: (docs: Document[]) => void;
   addDocument: (doc: Document) => void;
@@ -50,6 +51,10 @@ interface AppState {
   removeTag: (id: string) => void;
   renameTag: (id: string, name: string) => void;
   toggleTagOnDoc: (tagId: string, docId: string) => void;
+  addFolder: (parentId: string | null, name: string) => void;
+  addFile: (parentId: string | null, name: string) => void;
+  renameFileNode: (id: string, name: string) => void;
+  deleteFileNode: (id: string) => void;
 }
 
 const DEFAULT_USER_INFO: UserInfo = {
@@ -110,6 +115,36 @@ export const useAppStore = create<AppState>()(
       userInfo: DEFAULT_USER_INFO,
       tags: DEFAULT_TAGS,
       trashedDocs: [],
+      fileTree: [
+        {
+          id: "folder-docs",
+          name: "文档",
+          type: "folder",
+          children: [
+            { id: "file-3", name: "组件化设计思维", type: "file", docId: "3" },
+            { id: "file-1", name: "设计原则总览", type: "file", docId: "1" },
+            { id: "file-2", name: "Nexus 设计系统介绍", type: "file", docId: "2" },
+            { id: "file-4", name: "用户体验设计指南", type: "file", docId: "4" },
+            { id: "file-5", name: "信息架构与内容组织", type: "file", docId: "5" },
+          ],
+        },
+        {
+          id: "folder-project",
+          name: "项目文件",
+          type: "folder",
+          children: [
+            { id: "pf-gitignore", name: ".gitignore", type: "file" },
+            { id: "pf-sdd", name: "软件设计说明书_SDD.md", type: "file" },
+            { id: "pf-design", name: "设计开发文档.md", type: "file" },
+            { id: "pf-index", name: "index.html", type: "file" },
+            { id: "pf-pkg", name: "package.json", type: "file" },
+            { id: "pf-readme", name: "README.md", type: "file" },
+            { id: "pf-tailwind", name: "tailwind.config.js", type: "file" },
+            { id: "pf-tsconfig", name: "tsconfig.json", type: "file" },
+            { id: "pf-vite", name: "vite.config.ts", type: "file" },
+          ],
+        },
+      ],
 
       setDocuments: (docs) => set({ documents: docs }),
       addDocument: (doc) => set((s) => ({ documents: [doc, ...s.documents] })),
@@ -198,6 +233,91 @@ export const useAppStore = create<AppState>()(
             };
           }),
         })),
+      addFolder: (parentId, name) =>
+        set((s) => {
+          const newFolder: FileTreeNode = {
+            id: `folder-${Date.now()}`,
+            name,
+            type: "folder",
+            children: [],
+          };
+          if (!parentId) {
+            return { fileTree: [...s.fileTree, newFolder] };
+          }
+          const addToParent = (nodes: FileTreeNode[]): FileTreeNode[] =>
+            nodes.map((node) => {
+              if (node.id === parentId && node.type === "folder") {
+                return { ...node, children: [...(node.children || []), newFolder] };
+              }
+              if (node.children) {
+                return { ...node, children: addToParent(node.children) };
+              }
+              return node;
+            });
+          return { fileTree: addToParent(s.fileTree) };
+        }),
+      addFile: (parentId, name) =>
+        set((s) => {
+          const finalName = name.includes(".") ? name : `${name}.md`;
+          const docId = `doc-${Date.now()}`;
+          const newFile: FileTreeNode = {
+            id: `file-${Date.now()}`,
+            name: finalName,
+            type: "file",
+            docId,
+          };
+          const newDoc: Document = {
+            id: docId,
+            title: finalName.replace(/\.[^.]+$/, ""),
+            content: "",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          let newTree = s.fileTree;
+          if (!parentId) {
+            newTree = [...s.fileTree, newFile];
+          } else {
+            const addToParent = (nodes: FileTreeNode[]): FileTreeNode[] =>
+              nodes.map((node) => {
+                if (node.id === parentId && node.type === "folder") {
+                  return { ...node, children: [...(node.children || []), newFile] };
+                }
+                if (node.children) {
+                  return { ...node, children: addToParent(node.children) };
+                }
+                return node;
+              });
+            newTree = addToParent(s.fileTree);
+          }
+          return { fileTree: newTree, documents: [newDoc, ...s.documents] };
+        }),
+      renameFileNode: (id, name) =>
+        set((s) => {
+          const renameInTree = (nodes: FileTreeNode[]): FileTreeNode[] =>
+            nodes.map((node) => {
+              if (node.id === id) {
+                return { ...node, name };
+              }
+              if (node.children) {
+                return { ...node, children: renameInTree(node.children) };
+              }
+              return node;
+            });
+          return { fileTree: renameInTree(s.fileTree) };
+        }),
+      deleteFileNode: (id) =>
+        set((s) => {
+          const removeFromTree = (nodes: FileTreeNode[]): FileTreeNode[] =>
+            nodes
+              .filter((node) => node.id !== id)
+              .map((node) => {
+                if (node.children) {
+                  return { ...node, children: removeFromTree(node.children) };
+                }
+                return node;
+              });
+          return { fileTree: removeFromTree(s.fileTree) };
+        }),
     }),
     {
       name: "mohe-app-data",
@@ -206,6 +326,7 @@ export const useAppStore = create<AppState>()(
         documents: state.documents,
         tags: state.tags,
         trashedDocs: state.trashedDocs,
+        fileTree: state.fileTree,
       }),
     }
   )

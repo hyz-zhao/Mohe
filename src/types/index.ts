@@ -37,3 +37,11 @@ export interface Settings {
 export type ViewMode = "edit" | "preview" | "split";
 
 export type ActivePanel = "none" | "ai" | "outline";
+
+export interface FileTreeNode {
+  id: string;
+  name: string;
+  type: "file" | "folder";
+  children?: FileTreeNode[];
+  docId?: string; // linked document id for files
+}
