@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppStore } from "@/stores/appStore";
 import { useEditorStore } from "@/stores/editorStore";
-import { List, Edit3, Eye, MoreHorizontal, Tag, Plus, Save } from "lucide-react";
+import { List, Edit3, Eye, MoreHorizontal, Save } from "lucide-react";
 import CodeMirrorEditor from "./CodeMirrorEditor";
 import katex from "katex";
 import mermaid from "mermaid";
@@ -125,17 +125,6 @@ export default function Editor() {
             <Save size={12} />
             <span className="text-xs">{saveFlash ? "已保存" : "保存"}</span>
           </button>
-          <button className="btn-ghost flex items-center gap-1.5">
-            <Tag size={12} />
-            <span className="text-xs">设计原则</span>
-          </button>
-          <button className="btn-ghost flex items-center gap-1.5">
-            <Tag size={12} />
-            <span className="text-xs">方法论</span>
-          </button>
-          <button className="btn-ghost">
-            <Plus size={12} />
-          </button>
           <button className="btn-ghost">
             <MoreHorizontal size={14} />
           </button>
@@ -154,19 +143,6 @@ export default function Editor() {
             className="w-full text-2xl font-bold text-text-primary mb-4 bg-transparent outline-none border-none placeholder-text-muted"
             placeholder="未命名文档"
           />
-
-          {/* Tags */}
-          <div className="flex items-center gap-2 mb-6">
-            <span className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary">
-              # 设计原则
-            </span>
-            <span className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary">
-              # 方法论
-            </span>
-            <button className="text-xs text-text-muted hover:text-text-link transition-colors">
-              + 添加标签
-            </button>
-          </div>
 
           <div className="h-px bg-border-default mb-6" />
 
