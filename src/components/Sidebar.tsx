@@ -39,9 +39,28 @@ const activityItems: ActivityItem[] = [
 
 export default function Sidebar() {
   const { setCurrentDocId, currentDocId } = useEditorStore();
-  const { userInfo, touchDocument } = useAppStore();
+  const { userInfo, touchDocument, addFolder, addFile } = useAppStore();
   const [showSettings, setShowSettings] = useState(false);
   const [activeActivity, setActiveActivity] = useState("explorer");
+  const [headerMenu, setHeaderMenu] = useState<{ x: number; y: number } | null>(null);
+
+  const handleHeaderMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setHeaderMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const closeHeaderMenu = () => setHeaderMenu(null);
+
+  const handleNewFolder = () => {
+    addFolder(null, "未命名文件夹");
+    closeHeaderMenu();
+  };
+
+  const handleNewFile = () => {
+    addFile(null, "未命名文档");
+    closeHeaderMenu();
+  };
 
   return (
     <div className="flex h-full shrink-0">
@@ -97,15 +116,47 @@ export default function Sidebar() {
       </aside>
 
       {/* Side Panel */}
-      <aside className="w-64 bg-bg-sidebar border-r border-border-default flex flex-col shrink-0 overflow-hidden">
+      <aside
+        className="w-64 bg-bg-sidebar border-r border-border-default flex flex-col shrink-0 overflow-hidden"
+        onClick={closeHeaderMenu}
+      >
         <div className="h-9 flex items-center justify-between px-4 shrink-0 border-b border-border-default">
           <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
             {activityItems.find((i) => i.id === activeActivity)?.label || "资源管理器"}
           </span>
-          <button className="text-text-muted hover:text-text-secondary transition-colors">
+          <button
+            onClick={handleHeaderMenu}
+            className="text-text-muted hover:text-text-secondary transition-colors"
+          >
             <MoreHorizontal size={14} />
           </button>
         </div>
+
+        {/* Header Context Menu */}
+        {headerMenu && createPortal(
+          <div
+            className="fixed z-50 bg-bg-card border border-border-default rounded-md shadow-lg py-1 min-w-[140px]"
+            style={{ left: headerMenu.x, top: headerMenu.y }}
+            onClick={(e) => e.stopPropagation()}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <button
+              onClick={handleNewFolder}
+              className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-secondary hover:bg-bg-hover transition-colors"
+            >
+              <FolderIcon size={12} />
+              <span>新建文件夹</span>
+            </button>
+            <button
+              onClick={handleNewFile}
+              className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-secondary hover:bg-bg-hover transition-colors"
+            >
+              <FileText size={12} />
+              <span>新建文件</span>
+            </button>
+          </div>,
+          document.body
+        )}
 
         <div className="flex-1 overflow-y-auto">
           {activeActivity === "explorer" && (
@@ -218,6 +269,7 @@ function ExplorerPanel({
   const renderNode = (node: FileTreeNode, depth: number) => {
     const paddingLeft = 16 + depth * 16;
     const doc = node.docId ? documents.find((d) => d.id === node.docId) : null;
+    const displayName = doc?.title && doc.title !== "未命名文档" ? doc.title : node.name;
 
     if (node.type === "folder") {
       const isExpanded = expandedFolders[node.id] !== false;
@@ -303,7 +355,7 @@ function ExplorerPanel({
             onClick={() => node.docId && onDocClick(node.docId)}
             className="flex items-center gap-1.5 flex-1 min-w-0"
           >
-            <span className="truncate">{node.name}</span>
+            <span className="truncate">{displayName}</span>
           </button>
         )}
         {doc && (
@@ -426,25 +478,168 @@ function findParentId(tree: FileTreeNode[], id: string): string | null {
   return null;
 }
 
+/* ─── Reusable File Tree Renderer ─── */
+function FileTreeRenderer({
+  tree,
+  currentDocId,
+  onDocClick,
+  expandedFolders,
+  onToggleFolder,
+  filterFn,
+  renderExtra,
+  documents,
+}: {
+  tree: FileTreeNode[];
+  currentDocId: string | null;
+  onDocClick: (docId: string) => void;
+  expandedFolders: Record<string, boolean>;
+  onToggleFolder: (id: string) => void;
+  filterFn?: (node: FileTreeNode) => boolean;
+  renderExtra?: (node: FileTreeNode) => React.ReactNode;
+  documents: { id: string; title: string }[];
+}) {
+  const getFileIcon = (name: string) => {
+    const ext = name.split(".").pop()?.toLowerCase();
+    if (["md", "txt"].includes(ext || "")) return <FileText size={12} className="text-text-muted shrink-0" />;
+    if (["json"].includes(ext || "")) return <FileText size={12} className="text-amber-500 shrink-0" />;
+    if (["ts", "tsx", "js", "jsx"].includes(ext || "")) return <FileText size={12} className="text-blue-500 shrink-0" />;
+    if (["html", "htm"].includes(ext || "")) return <FileText size={12} className="text-orange-500 shrink-0" />;
+    if (["css", "scss"].includes(ext || "")) return <FileText size={12} className="text-purple-500 shrink-0" />;
+    return <FileText size={12} className="text-text-muted shrink-0" />;
+  };
+
+  const renderNode = (node: FileTreeNode, depth: number): React.ReactNode => {
+    const paddingLeft = 16 + depth * 16;
+    const passesFilter = !filterFn || filterFn(node);
+    const doc = node.docId ? documents.find((d) => d.id === node.docId) : null;
+    const displayName = doc?.title && doc.title !== "未命名文档" ? doc.title : node.name;
+
+    if (node.type === "folder") {
+      const isExpanded = expandedFolders[node.id] !== false;
+      const hasVisibleChildren = node.children?.some((child) => {
+        if (child.type === "file") return filterFn ? filterFn(child) : true;
+        if (child.type === "folder") {
+          // Recursively check if any descendant file passes filter
+          const checkDescendants = (n: FileTreeNode): boolean => {
+            if (n.type === "file") return filterFn ? filterFn(n) : true;
+            return n.children?.some(checkDescendants) ?? false;
+          };
+          return checkDescendants(child);
+        }
+        return false;
+      });
+
+      if (!hasVisibleChildren && filterFn) return null;
+
+      return (
+        <div key={node.id}>
+          <div
+            className="flex items-center gap-1 w-full text-left py-1 text-xs transition-colors group text-text-secondary hover:bg-bg-hover"
+            style={{ paddingLeft }}
+          >
+            <button
+              onClick={() => onToggleFolder(node.id)}
+              className="shrink-0 text-text-muted"
+            >
+              {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            </button>
+            <span className="flex items-center flex-1 min-w-0">
+              <FolderIcon size={12} className="text-text-muted shrink-0" />
+              <span className="flex-1 truncate">{node.name}</span>
+            </span>
+          </div>
+          {isExpanded && node.children && (
+            <div>{node.children.map((child) => renderNode(child, depth + 1))}</div>
+          )}
+        </div>
+      );
+    }
+
+    // File node
+    if (!passesFilter) return null;
+
+    return (
+      <div
+        key={node.id}
+        className={`flex items-center gap-1.5 w-full text-left py-1 text-xs transition-colors group ${
+          currentDocId === node.docId
+            ? "bg-bg-active text-text-primary"
+            : "text-text-tertiary hover:bg-bg-hover hover:text-text-secondary"
+        }`}
+        style={{ paddingLeft }}
+      >
+        {getFileIcon(node.name)}
+        <button
+          onClick={() => node.docId && onDocClick(node.docId)}
+          className="flex items-center gap-1.5 flex-1 min-w-0"
+        >
+          <span className="truncate">{displayName}</span>
+        </button>
+        {renderExtra?.(node)}
+      </div>
+    );
+  };
+
+  return <div className="space-y-0">{tree.map((node) => renderNode(node, 0))}</div>;
+}
+
 /* ─── Search Panel ─── */
 function SearchPanel() {
-  const { documents, touchDocument } = useAppStore();
-  const { setCurrentDocId } = useEditorStore();
+  const { documents, fileTree, touchDocument } = useAppStore();
+  const { currentDocId, setCurrentDocId } = useEditorStore();
   const [query, setQuery] = useState("");
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    "folder-docs": true,
+    "folder-project": true,
+  });
 
-  const results = useMemo(() => {
-    if (!query.trim()) return [];
+  const matchedDocIds = useMemo(() => {
+    if (!query.trim()) return new Set<string>();
     const q = query.toLowerCase();
-    return documents
-      .filter((d) => d.title.toLowerCase().includes(q) || d.content.toLowerCase().includes(q))
-      .map((d) => {
-        const idx = d.content.toLowerCase().indexOf(q);
-        const snippet = idx >= 0
-          ? d.content.slice(Math.max(0, idx - 30), idx + query.length + 30)
-          : d.content.slice(0, 80);
-        return { ...d, snippet };
-      });
+    return new Set(
+      documents
+        .filter((d) => d.title.toLowerCase().includes(q) || d.content.toLowerCase().includes(q))
+        .map((d) => d.id)
+    );
   }, [query, documents]);
+
+  const toggleFolder = (id: string) => {
+    setExpandedFolders((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleDocClick = (docId: string) => {
+    touchDocument(docId);
+    setCurrentDocId(docId);
+  };
+
+  const getSnippet = (docId: string) => {
+    const doc = documents.find((d) => d.id === docId);
+    if (!doc || !query.trim()) return "";
+    const q = query.toLowerCase();
+    const idx = doc.content.toLowerCase().indexOf(q);
+    return idx >= 0
+      ? doc.content.slice(Math.max(0, idx - 30), idx + query.length + 30)
+      : doc.content.slice(0, 80);
+  };
+
+  const filterFn = (node: FileTreeNode) => {
+    if (node.type === "file" && node.docId) {
+      return matchedDocIds.has(node.docId);
+    }
+    return true;
+  };
+
+  const renderExtra = (node: FileTreeNode) => {
+    if (node.type === "file" && node.docId && query.trim()) {
+      const snippet = getSnippet(node.docId);
+      return snippet ? (
+        <p className="text-[10px] text-text-muted truncate ml-2 flex-1">
+          {snippet}
+        </p>
+      ) : null;
+    }
+    return null;
+  };
 
   return (
     <div className="p-2">
@@ -470,44 +665,51 @@ function SearchPanel() {
 
       {query && (
         <div className="text-[10px] text-text-muted mb-2 px-1">
-          找到 {results.length} 个结果
+          找到 {matchedDocIds.size} 个结果
         </div>
       )}
 
-      <div className="space-y-1">
-        {results.map((doc) => (
-          <button
-            key={doc.id}
-            onClick={() => { touchDocument(doc.id); setCurrentDocId(doc.id); }}
-            className="w-full text-left p-2 rounded-md hover:bg-bg-hover transition-colors group"
-          >
-            <div className="flex items-center gap-1.5 mb-1">
-              <FileText size={11} className="text-text-muted shrink-0" />
-              <span className="text-xs text-text-primary font-medium truncate">{doc.title}</span>
-            </div>
-            <p className="text-[10px] text-text-muted truncate pl-4">
-              {doc.snippet}
-            </p>
-          </button>
-        ))}
-        {query && results.length === 0 && (
-          <div className="text-center py-8 text-text-muted text-xs">
-            没有找到匹配的文档
-          </div>
-        )}
-      </div>
+      {!query ? (
+        <FileTreeRenderer
+          tree={fileTree}
+          currentDocId={currentDocId}
+          onDocClick={handleDocClick}
+          expandedFolders={expandedFolders}
+          onToggleFolder={toggleFolder}
+          documents={documents}
+        />
+      ) : matchedDocIds.size === 0 ? (
+        <div className="text-center py-8 text-text-muted text-xs">
+          没有找到匹配的文档
+        </div>
+      ) : (
+        <FileTreeRenderer
+          tree={fileTree}
+          currentDocId={currentDocId}
+          onDocClick={handleDocClick}
+          expandedFolders={expandedFolders}
+          onToggleFolder={toggleFolder}
+          filterFn={filterFn}
+          renderExtra={renderExtra}
+          documents={documents}
+        />
+      )}
     </div>
   );
 }
 
-/* ─── Tags Panel ─── */
+/* ── Tags Panel ─── */
 function TagsPanel() {
-  const { tags, documents, addTag, removeTag, renameTag, touchDocument } = useAppStore();
-  const { setCurrentDocId } = useEditorStore();
+  const { tags, fileTree, addTag, removeTag, renameTag, touchDocument, documents } = useAppStore();
+  const { currentDocId, setCurrentDocId } = useEditorStore();
   const [newTagName, setNewTagName] = useState("");
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [expandedTag, setExpandedTag] = useState<string | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    "folder-docs": true,
+    "folder-project": true,
+  });
 
   const tagColors = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#f97316"];
 
@@ -522,6 +724,15 @@ function TagsPanel() {
     if (editName.trim()) renameTag(id, editName.trim());
     setEditingTagId(null);
   }
+
+  const toggleFolder = (id: string) => {
+    setExpandedFolders((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleDocClick = (docId: string) => {
+    touchDocument(docId);
+    setCurrentDocId(docId);
+  };
 
   return (
     <div className="p-2">
@@ -546,8 +757,15 @@ function TagsPanel() {
       {/* Tag List */}
       <div className="space-y-0.5">
         {tags.map((tag) => {
-          const tagDocs = documents.filter((d) => tag.docIds.includes(d.id));
+          const tagDocIds = new Set(tag.docIds);
           const isExpanded = expandedTag === tag.id;
+
+          const filterFn = (node: FileTreeNode) => {
+            if (node.type === "file" && node.docId) {
+              return tagDocIds.has(node.docId);
+            }
+            return true;
+          };
 
           return (
             <div key={tag.id}>
@@ -580,7 +798,7 @@ function TagsPanel() {
                     {tag.name}
                   </span>
                 )}
-                <span className="text-[10px] text-text-muted mr-1">{tagDocs.length}</span>
+                <span className="text-[10px] text-text-muted mr-1">{tag.docIds.length}</span>
                 <button
                   onClick={() => removeTag(tag.id)}
                   className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-danger transition-all"
@@ -589,18 +807,17 @@ function TagsPanel() {
                 </button>
               </div>
 
-              {isExpanded && tagDocs.length > 0 && (
-                <div className="ml-5 mt-0.5 space-y-0.5 border-l border-border-default pl-2">
-                  {tagDocs.map((doc) => (
-                    <button
-                      key={doc.id}
-                      onClick={() => { touchDocument(doc.id); setCurrentDocId(doc.id); }}
-                      className="flex items-center gap-1.5 w-full text-left px-1 py-1 rounded text-xs text-text-tertiary hover:bg-bg-hover hover:text-text-secondary transition-colors"
-                    >
-                      <FileText size={10} className="text-text-muted shrink-0" />
-                      <span className="truncate">{doc.title}</span>
-                    </button>
-                  ))}
+              {isExpanded && (
+                <div className="ml-5 mt-0.5 border-l border-border-default pl-2">
+                  <FileTreeRenderer
+                    tree={fileTree}
+                    currentDocId={currentDocId}
+                    onDocClick={handleDocClick}
+                    expandedFolders={expandedFolders}
+                    onToggleFolder={toggleFolder}
+                    filterFn={filterFn}
+                    documents={documents}
+                  />
                 </div>
               )}
             </div>
@@ -725,42 +942,71 @@ function GraphPanel() {
 
 /* ─── Starred Panel ─── */
 function StarredPanel() {
-  const { documents, touchDocument, toggleStar } = useAppStore();
-  const { setCurrentDocId } = useEditorStore();
-  const starredDocs = documents.filter((d) => d.starred);
+  const { documents, fileTree, touchDocument, toggleStar } = useAppStore();
+  const { currentDocId, setCurrentDocId } = useEditorStore();
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({
+    "folder-docs": true,
+    "folder-project": true,
+  });
+
+  const starredDocIds = useMemo(
+    () => new Set(documents.filter((d) => d.starred).map((d) => d.id)),
+    [documents]
+  );
+
+  const toggleFolder = (id: string) => {
+    setExpandedFolders((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleDocClick = (docId: string) => {
+    touchDocument(docId);
+    setCurrentDocId(docId);
+  };
+
+  const filterFn = (node: FileTreeNode) => {
+    if (node.type === "file" && node.docId) {
+      return starredDocIds.has(node.docId);
+    }
+    return true;
+  };
+
+  const renderExtra = (node: FileTreeNode) => {
+    if (node.type === "file" && node.docId) {
+      return (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleStar(node.docId!);
+          }}
+          className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-danger transition-all shrink-0"
+          title="取消收藏"
+        >
+          <X size={10} />
+        </button>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="p-2">
-      {starredDocs.length === 0 ? (
+      {starredDocIds.size === 0 ? (
         <div className="text-center py-12">
           <Star size={24} className="mx-auto text-text-muted opacity-30 mb-2" />
           <div className="text-xs text-text-muted">暂无收藏文档</div>
           <div className="text-[10px] text-text-muted mt-1">点击文档标题旁的星标收藏</div>
         </div>
       ) : (
-        <div className="space-y-0.5">
-          {starredDocs.map((doc) => (
-            <div
-              key={doc.id}
-              className="flex items-center gap-1.5 px-2 py-1.5 rounded group hover:bg-bg-hover transition-colors"
-            >
-              <button
-                onClick={() => { touchDocument(doc.id); setCurrentDocId(doc.id); }}
-                className="flex items-center gap-1.5 flex-1 min-w-0"
-              >
-                <Star size={11} className="text-amber-400 fill-amber-400 shrink-0" />
-                <span className="text-xs text-text-secondary truncate">{doc.title}</span>
-              </button>
-              <button
-                onClick={() => toggleStar(doc.id)}
-                className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-danger transition-all shrink-0"
-                title="取消收藏"
-              >
-                <X size={10} />
-              </button>
-            </div>
-          ))}
-        </div>
+        <FileTreeRenderer
+          tree={fileTree}
+          currentDocId={currentDocId}
+          onDocClick={handleDocClick}
+          expandedFolders={expandedFolders}
+          onToggleFolder={toggleFolder}
+          filterFn={filterFn}
+          renderExtra={renderExtra}
+          documents={documents}
+        />
       )}
     </div>
   );

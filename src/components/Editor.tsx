@@ -22,14 +22,17 @@ mermaid.initialize({
 });
 
 export default function Editor() {
-  const { documents, updateDocument } = useAppStore();
+  const { documents, updateDocument, tags, addTag, toggleTagOnDoc } = useAppStore();
   const { currentDocId, viewMode, setViewMode, saved, setSaved } = useEditorStore();
 
   const doc = documents.find((d) => d.id === currentDocId);
+  const docTags = doc ? tags.filter((t) => t.docIds.includes(doc.id)) : [];
 
   const [content, setContent] = useState(doc?.content ?? "");
   const [title, setTitle] = useState(doc?.title ?? "");
   const [saveFlash, setSaveFlash] = useState(false);
+  const [showTagInput, setShowTagInput] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -148,16 +151,55 @@ export default function Editor() {
           />
 
           {/* Tags */}
-          <div className="flex items-center gap-2 mb-6">
-            <span className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary">
-              # 设计原则
-            </span>
-            <span className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary">
-              # 方法论
-            </span>
-            <button className="text-xs text-text-muted hover:text-text-link transition-colors">
-              + 添加标签
-            </button>
+          <div className="flex items-center gap-2 mb-6 flex-wrap">
+            {docTags.map((tag) => (
+              <span
+                key={tag.id}
+                className="px-2 py-0.5 bg-bg-card border border-border-card rounded text-xs text-text-tertiary"
+              >
+                # {tag.name}
+              </span>
+            ))}
+            {showTagInput ? (
+              <input
+                type="text"
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+                onBlur={() => {
+                  if (newTagName.trim() && currentDocId) {
+                    const existingTag = tags.find((t) => t.name === newTagName.trim());
+                    if (existingTag) {
+                      toggleTagOnDoc(existingTag.id, currentDocId);
+                    } else {
+                      const newTagId = `t${Date.now()}`;
+                      addTag(newTagName.trim(), "#8a8279");
+                      toggleTagOnDoc(newTagId, currentDocId);
+                    }
+                  }
+                  setNewTagName("");
+                  setShowTagInput(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.currentTarget.blur();
+                  }
+                  if (e.key === "Escape") {
+                    setNewTagName("");
+                    setShowTagInput(false);
+                  }
+                }}
+                className="px-2 py-0.5 bg-bg-input border border-border-input rounded text-xs text-text-primary focus:outline-none focus:border-accent min-w-[80px]"
+                autoFocus
+                placeholder="标签名"
+              />
+            ) : (
+              <button
+                onClick={() => setShowTagInput(true)}
+                className="text-xs text-text-muted hover:text-text-link transition-colors"
+              >
+                + 添加标签
+              </button>
+            )}
           </div>
 
           <div className="h-px bg-border-default mb-6" />
